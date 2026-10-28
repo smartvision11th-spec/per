@@ -295,9 +295,9 @@ function ExplodedComponent({
     const targetY = assembledPos[1] + (explodedPos[1] - assembledPos[1]) * ease;
     const targetZ = assembledPos[2] + (explodedPos[2] - assembledPos[2]) * ease;
 
-    currentPos.current.x = THREE.MathUtils.lerp(currentPos.current.x, targetX, 0.08);
-    currentPos.current.y = THREE.MathUtils.lerp(currentPos.current.y, targetY, 0.08);
-    currentPos.current.z = THREE.MathUtils.lerp(currentPos.current.z, targetZ, 0.08);
+    currentPos.current.x = THREE.MathUtils.lerp(currentPos.current.x, targetX, 0.16);
+    currentPos.current.y = THREE.MathUtils.lerp(currentPos.current.y, targetY, 0.16);
+    currentPos.current.z = THREE.MathUtils.lerp(currentPos.current.z, targetZ, 0.16);
 
     groupRef.current.position.copy(currentPos.current);
   });
@@ -327,20 +327,17 @@ function SpatialBarbellRig({ scrollProgress }: SpatialBarbellExperienceProps) {
   useFrame((state) => {
     if (!masterGroup.current) return;
     const p = scrollProgress.current;
-    smoothProgress.current = THREE.MathUtils.lerp(smoothProgress.current, p, 0.05);
+    smoothProgress.current = THREE.MathUtils.lerp(smoothProgress.current, p, 0.15);
     const sp = smoothProgress.current;
 
     // Continuous dynamic camera orbit across the entire page scroll:
-    // When p is 0.0: Close heroic angle
-    // When p is 0.5: Wide dramatic exploded isometric view
-    // When p is 1.0: Intimate mechanical detail
     const camZ = 7.5 + sp * 4.8;
     const camY = 0.4 + Math.sin(sp * Math.PI) * 2.2;
     const camX = Math.sin(sp * Math.PI * 1.5) * 1.8;
 
-    camera.position.x = THREE.MathUtils.lerp(camera.position.x, camX, 0.06);
-    camera.position.y = THREE.MathUtils.lerp(camera.position.y, camY, 0.06);
-    camera.position.z = THREE.MathUtils.lerp(camera.position.z, camZ, 0.06);
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, camX, 0.16);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, camY, 0.16);
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, camZ, 0.16);
     camera.lookAt(0, 0, 0);
 
     // Subtle atmospheric breathing rotation
@@ -348,12 +345,12 @@ function SpatialBarbellRig({ scrollProgress }: SpatialBarbellExperienceProps) {
     masterGroup.current.rotation.y = THREE.MathUtils.lerp(
       masterGroup.current.rotation.y,
       -0.15 + sp * 0.6 + Math.sin(t * 0.4) * 0.04,
-      0.05
+      0.12
     );
     masterGroup.current.rotation.x = THREE.MathUtils.lerp(
       masterGroup.current.rotation.x,
       0.08 + Math.cos(t * 0.5) * 0.03,
-      0.05
+      0.12
     );
   });
 

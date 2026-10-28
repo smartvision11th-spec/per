@@ -51,33 +51,33 @@ export default function HeroExplodedSection() {
         end: "bottom bottom",
         pin: stickyRef.current,
         pinSpacing: false,
-        scrub: 1.0,
+        scrub: 0.4,
         onUpdate: (self) => {
           const raw = self.progress;
 
-          // Seamless 4-Phase Cinematic Cycle
-          // 0.00 - 0.22: Scene A - Hero entrance & complete recognizable assembly
-          // 0.22 - 0.65: Scene B - Controlled disassembly along axial trajectory
-          // 0.65 - 0.85: Scene C - Maximum separation & architectural HUD telemetry
-          // 0.85 - 1.00: Scene D - Reassembly and kinetic hand-off
+          // Snappy, agile 4-Phase Cinematic Cycle
+          // 0.00 - 0.12: Scene A - Quick heroic introduction
+          // 0.12 - 0.55: Scene B - Fast, responsive exploded separation
+          // 0.55 - 0.80: Scene C - Maximum separation & telemetry
+          // 0.80 - 1.00: Scene D - Fast mechanical reassembly into page
           let p = 0;
-          if (raw < 0.22) {
+          if (raw < 0.12) {
             p = 0;
             setActiveStage("ASSEMBLED");
-          } else if (raw < 0.65) {
-            p = (raw - 0.22) / 0.43;
+          } else if (raw < 0.55) {
+            p = (raw - 0.12) / 0.43;
             setActiveStage("EXPLODING");
-          } else if (raw < 0.85) {
+          } else if (raw < 0.80) {
             p = 1;
             setActiveStage("MAX_SEPARATION");
           } else {
-            p = 1 - (raw - 0.85) / 0.15;
+            p = 1 - (raw - 0.80) / 0.20;
             setActiveStage("REASSEMBLY");
           }
 
           scrollProgress.current = p;
           setExplodeRatio(p);
-          setAnnotationsVisible(p > 0.45 && p < 0.95);
+          setAnnotationsVisible(p > 0.40 && p < 0.95);
         },
       });
 
@@ -94,7 +94,7 @@ export default function HeroExplodedSection() {
       id="hero"
       ref={containerRef}
       className="relative w-full"
-      style={{ height: "460vh", background: "#030406" }}
+      style={{ height: "230vh", background: "#030406" }}
       aria-label="Hero and 3D apparatus sequence"
     >
       {/* 100vh Sticky Viewport for the Continuous Spatial Experience */}
