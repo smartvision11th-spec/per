@@ -1,54 +1,40 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import Navbar from "@/components/Navbar";
-import HeroSection from "@/components/HeroSection";
-import BentoAmenities from "@/components/BentoAmenities";
-import InteractiveCalculator from "@/components/InteractiveCalculator";
-import ClassSchedule from "@/components/ClassSchedule";
-import PricingMatrix from "@/components/PricingMatrix";
-import Trainers from "@/components/Trainers";
-import Testimonials from "@/components/Testimonials";
-import Footer from "@/components/Footer";
-import BookingModal from "@/components/BookingModal";
+import HeroExplodedSection from "@/components/HeroExplodedSection";
+import TrainingIntentSection from "@/components/TrainingIntentSection";
+import FacilitiesSection from "@/components/FacilitiesSection";
+import MembershipSection from "@/components/MembershipSection";
+import ConsistencySection from "@/components/ConsistencySection";
+import ContactSection from "@/components/ContactSection";
 
 export default function Home() {
-  const [isBookingOpen, setIsBookingOpen] = useState(false);
-
-  const handleOpenBooking = () => setIsBookingOpen(true);
-  const handleCloseBooking = () => setIsBookingOpen(false);
-
   return (
-    <main className="min-h-screen bg-dark-950 text-slate-100 relative selection:bg-brand-orange selection:text-white">
-      {/* 21st.dev Floating Glassmorphism Navbar */}
-      <Navbar onOpenBooking={handleOpenBooking} />
+    <main className="min-h-screen" style={{ background: "var(--c-void)" }}>
+      {/* Noise texture overlay */}
+      <div className="noise-overlay" aria-hidden="true" />
 
-      {/* Cinematic 3D Kinetic Hero Section */}
-      <HeroSection onOpenBooking={handleOpenBooking} />
+      {/* Navigation */}
+      <Navbar />
 
-      {/* 21st.dev Spotlight Bento Grid Amenities */}
-      <BentoAmenities />
+      {/* S01 + S02: Hero + Scroll-driven 3D Exploded View */}
+      <HeroExplodedSection />
 
-      {/* Interactive 1-Rep Max & Telemetry Calculator */}
-      <InteractiveCalculator onOpenBooking={handleOpenBooking} />
+      {/* S03: Train With Intent — editorial training grid */}
+      <TrainingIntentSection />
 
-      {/* Daily Studio Class Schedule */}
-      <ClassSchedule onOpenBooking={handleOpenBooking} />
+      {/* S04: Training Floor — facility zones */}
+      <FacilitiesSection />
 
-      {/* Dynamic 3-Tier Pricing Matrix */}
-      <PricingMatrix onOpenBooking={handleOpenBooking} />
+      {/* S05: Find Your Training Style — membership tiers */}
+      <MembershipSection />
 
-      {/* Certified Master Coaches */}
-      <Trainers onOpenBooking={handleOpenBooking} />
+      {/* S06: Consistency Builds Results — typographic philosophy section */}
+      <ConsistencySection />
 
-      {/* Social Proof & Verified Reviews */}
-      <Testimonials />
-
-      {/* Full Facility Footer */}
-      <Footer />
-
-      {/* Interactive 24-Hour VIP Digital Pass Modal */}
-      <BookingModal isOpen={isBookingOpen} onClose={handleCloseBooking} />
+      {/* S07: Start Training — contact + enquiry form */}
+      <ContactSection />
     </main>
   );
 }

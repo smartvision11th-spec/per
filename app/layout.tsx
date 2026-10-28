@@ -5,28 +5,27 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
-  themeColor: "#FF5500",
+  themeColor: "#080A0D",
 };
 
 export const metadata: Metadata = {
-  title: "Perfect Fitness Gym | Elite 24/7 Athletic Facility & Recovery Spa",
+  title: "Perfect Fitness Gym | Built Through Discipline",
   description:
-    "Experience state-of-the-art Olympic strength training, cryo-recovery, AI biometrics, and world-class athletic coaching. Open 24/7.",
+    "Train with purpose. Build strength. Move beyond your limits. Premium strength training facility with cutting-edge equipment and expert coaching.",
   keywords: [
     "gym",
     "fitness",
-    "athletic training",
-    "24/7 gym",
-    "cryotherapy",
+    "strength training",
+    "premium gym",
+    "barbell",
     "personal trainer",
-    "Olympic lifting",
-    "recovery spa",
+    "weight lifting",
   ],
   authors: [{ name: "Perfect Fitness Gym" }],
   openGraph: {
-    title: "Perfect Fitness Gym | Forge Your Peak Potential",
+    title: "Perfect Fitness Gym | Built Through Discipline",
     description:
-      "State-of-the-art training zones, cryogenic recovery, and bespoke coaching. Claim your 1-day guest pass.",
+      "Train with purpose. Build strength. Move beyond your limits.",
     type: "website",
     locale: "en_US",
   },
@@ -38,8 +37,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark scroll-smooth">
-      <body className="min-h-screen bg-background text-slate-100 antialiased selection:bg-brand-orange selection:text-white">
+    <html lang="en" className="scroll-smooth">
+      <body className="min-h-screen bg-void antialiased">
         {children}
       </body>
     </html>
