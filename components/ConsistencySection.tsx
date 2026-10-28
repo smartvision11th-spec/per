@@ -4,32 +4,31 @@ import React, { useRef, useEffect } from "react";
 
 const lines = [
   { word: "CONSISTENCY", accent: false },
-  { word: "BUILDS", accent: false },
-  { word: "RESULTS.", accent: true },
+  { word: "FORGES", accent: true },
+  { word: "TITANS.", accent: false },
 ];
 
 const principles = [
   {
     number: "01",
-    title: "Show up when it's hard.",
-    body: "Motivation is weather. Discipline is infrastructure. Train whether you want to or not, and results follow.",
+    title: "NEVER RELY ON FLEETING MOTIVATION",
+    body: "Motivation is temporary dopamine. Systemic discipline is an immovable fortress. Show up to the barbell when you're fatigued, when it rains, and when nobody is cheering.",
   },
   {
     number: "02",
-    title: "Programme over instinct.",
-    body: "Random effort produces random results. A structured programme, executed with patience, is what creates measurable progress.",
+    title: "PROGRESSION DEMANDS DATA",
+    body: "Arbitrary training produces stagnant aesthetics. Measure bar speed, track mechanical overload, and monitor rest intervals with engineering-grade rigor.",
   },
   {
     number: "03",
-    title: "Recovery is training.",
-    body: "Adaptation happens outside the gym. Sleep, nutrition, and deliberate rest are not optional — they are the work.",
+    title: "RECOVERY IS WHERE GROWTH HAPPENS",
+    body: "You do not grow in the squat rack; you break down muscle tissue. True progress is synthesized in high-quality REM sleep, sub-zero cold immersion, and disciplined micronutrition.",
   },
 ];
 
 export default function ConsistencySection() {
   const sectionRef = useRef<HTMLElement>(null);
   const headlineRef = useRef<HTMLDivElement>(null);
-  const principlesRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -38,7 +37,6 @@ export default function ConsistencySection() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            // Animate headline
             const words = entry.target.querySelectorAll(".consistency-word");
             words.forEach((word, i) => {
               setTimeout(() => {
@@ -47,7 +45,6 @@ export default function ConsistencySection() {
               }, i * 200);
             });
 
-            // Animate principles
             const prList = entry.target.querySelectorAll(".principle-item");
             prList.forEach((pr, i) => {
               setTimeout(() => {
@@ -74,51 +71,24 @@ export default function ConsistencySection() {
         background: "var(--c-void)",
         paddingTop: "clamp(100px, 15vw, 180px)",
         paddingBottom: "clamp(100px, 15vw, 180px)",
-        borderTop: "1px solid rgba(255,255,255,0.04)",
+        borderTop: "1px solid rgba(255,115,0,0.1)",
       }}
       aria-labelledby="consistency-heading"
     >
-      {/* Background: large faint grid */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          backgroundImage: "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
-          backgroundSize: "100px 100px",
-        }}
-        aria-hidden="true"
-      />
-
-      {/* Giant watermark number */}
-      <div
-        className="absolute right-0 top-1/2 -translate-y-1/2 font-display font-black select-none pointer-events-none"
-        style={{
-          fontSize: "clamp(20rem, 35vw, 50rem)",
-          lineHeight: "0.8",
-          color: "rgba(255,255,255,0.015)",
-          letterSpacing: "-0.05em",
-          right: "-0.05em",
-        }}
-        aria-hidden="true"
-      >
-        06
-      </div>
-
       <div className="container-gym relative z-10">
+        <div className="label-overline mb-8">06 / ATHLETIC CODE & PHILOSOPHY</div>
 
-        {/* Overline */}
-        <div className="label-overline mb-12">06 / The Philosophy</div>
-
-        {/* Giant headline */}
+        {/* Giant Headline */}
         <div ref={headlineRef} className="mb-20" id="consistency-heading">
           {lines.map((line, i) => (
             <div key={i} className="overflow-hidden">
               <span
-                className="consistency-word font-display font-black uppercase block"
+                className={`consistency-word font-display font-black uppercase block tracking-tight ${
+                  line.accent ? "text-gradient-amber" : "text-white"
+                }`}
                 style={{
-                  fontSize: "clamp(4rem, 13vw, 12rem)",
+                  fontSize: "clamp(4.5rem, 13vw, 11rem)",
                   lineHeight: "0.88",
-                  letterSpacing: "-0.02em",
-                  color: line.accent ? "var(--c-acid)" : "var(--c-white)",
                   opacity: 0,
                   transform: "translateY(60px) skewY(3deg)",
                   transition: "opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1), transform 0.9s cubic-bezier(0.16, 1, 0.3, 1)",
@@ -130,40 +100,25 @@ export default function ConsistencySection() {
           ))}
         </div>
 
-        {/* Three principles — editorial list */}
-        <div ref={principlesRef} className="grid grid-cols-1 md:grid-cols-3 gap-0">
+        {/* Three Principles */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {principles.map((p, i) => (
             <div
               key={p.number}
-              className="principle-item"
+              className="principle-item glass p-8 border border-white/5 relative"
               style={{
                 opacity: 0,
                 transform: "translateX(-20px)",
-                transition: `opacity 0.8s ease, transform 0.8s ease`,
-                paddingTop: "40px",
-                paddingBottom: "40px",
-                paddingRight: i < 2 ? "40px" : "0",
-                borderTop: "1px solid rgba(255,255,255,0.06)",
-                borderRight: i < 2 ? "1px solid rgba(255,255,255,0.04)" : "none",
-                paddingLeft: i > 0 ? "40px" : "0",
+                transition: `opacity 0.8s ${i * 0.15}s ease, transform 0.8s ${i * 0.15}s ease`,
               }}
             >
-              <div
-                className="font-mono mb-4 block"
-                style={{ fontSize: "11px", color: "var(--c-acid)", letterSpacing: "0.15em" }}
-              >
-                {p.number}
+              <div className="font-mono text-xs text-amber-sun font-bold tracking-widest mb-4">
+                {p.number} // PROTOCOL
               </div>
-              <h3
-                className="font-display font-bold uppercase mb-3"
-                style={{ fontSize: "clamp(1.2rem, 2vw, 1.5rem)", color: "var(--c-white)", lineHeight: "1.1" }}
-              >
+              <h3 className="font-display font-black text-xl text-white uppercase tracking-wider mb-3">
                 {p.title}
               </h3>
-              <p
-                className="font-body"
-                style={{ fontSize: "13px", color: "var(--c-silver)", lineHeight: "1.75" }}
-              >
+              <p className="font-body text-xs sm:text-sm text-silver leading-relaxed">
                 {p.body}
               </p>
             </div>

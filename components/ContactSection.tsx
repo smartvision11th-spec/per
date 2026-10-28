@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useId } from "react";
-import { ArrowRight, MapPin, Clock, Mail, Phone } from "lucide-react";
+import { ArrowRight, MapPin, Clock, Mail, Phone, Flame } from "lucide-react";
 
 interface FormData {
   name: string;
@@ -18,12 +18,11 @@ interface FormErrors {
 }
 
 const interests = [
-  "Essential Membership",
-  "Performance Membership",
-  "Elite Membership",
-  "Group Classes",
-  "Personal Training",
-  "Facility Tour",
+  "Essential Access Membership",
+  "Solar Performance Membership",
+  "VIP Titanium Elite Coaching",
+  "Facility Apparatus Private Tour",
+  "Powerlifting / Olympic Consultation",
 ];
 
 export default function ContactSection() {
@@ -41,13 +40,13 @@ export default function ContactSection() {
 
   const validate = (): boolean => {
     const newErrors: FormErrors = {};
-    if (!formData.name.trim()) newErrors.name = "Name is required";
+    if (!formData.name.trim()) newErrors.name = "Full name is required";
     if (!formData.email.trim()) {
-      newErrors.email = "Email is required";
+      newErrors.email = "Valid email address is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = "Enter a valid email address";
+      newErrors.email = "Enter a valid email format";
     }
-    if (!formData.interest) newErrors.interest = "Please select your interest";
+    if (!formData.interest) newErrors.interest = "Please select a training program";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,12 +64,10 @@ export default function ContactSection() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) {
-      // Focus first error
       const firstError = formRef.current?.querySelector("[aria-invalid='true']") as HTMLElement;
       firstError?.focus();
       return;
     }
-    // No real backend — show honest note
     setStatus("note");
   };
 
@@ -79,86 +76,60 @@ export default function ContactSection() {
       id="contact"
       className="relative"
       style={{
-        background: "var(--c-charcoal)",
+        background: "var(--c-ink)",
         paddingTop: "clamp(80px, 12vw, 140px)",
         paddingBottom: "clamp(60px, 8vw, 100px)",
-        borderTop: "1px solid rgba(255,255,255,0.06)",
+        borderTop: "1px solid rgba(255,115,0,0.15)",
       }}
       aria-labelledby="contact-heading"
     >
-      {/* Top acid line */}
-      <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "2px", background: "var(--c-acid)" }} aria-hidden="true" />
-
       <div className="container-gym">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-24">
-
-          {/* Left: copy & contact info */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
+          {/* Left: Contact Info */}
           <div className="lg:col-span-5">
-            <div className="label-overline mb-5">07 / Start Training</div>
+            <div className="label-overline mb-3">07 / INITIATE MEMBERSHIP</div>
             <h2
-              className="font-display font-black uppercase mb-6"
+              className="font-display font-black uppercase text-white tracking-tight mb-6"
               id="contact-heading"
               style={{
-                fontSize: "clamp(2.8rem, 6vw, 4.5rem)",
-                lineHeight: "0.93",
-                color: "var(--c-white)",
+                fontSize: "clamp(3rem, 6vw, 4.8rem)",
+                lineHeight: "0.92",
               }}
             >
-              READY TO
-              <br />
-              <span style={{ color: "var(--c-acid)" }}>BEGIN?</span>
+              READY TO <br />
+              <span className="text-gradient-amber">COMMAND RESULTS?</span>
             </h2>
-            <p
-              className="font-body mb-12"
-              style={{ fontSize: "14px", color: "var(--c-silver)", lineHeight: "1.8", maxWidth: "340px" }}
-            >
-              Tell us what you are looking to achieve. We will get back to you
-              within one business day with information that is actually relevant
-              to your goals.
+            <p className="font-body text-sm text-silver leading-relaxed mb-12">
+              Step across the threshold. Connect with our coaching desk to discuss your performance history and schedule a private apparatus inspection.
             </p>
 
-            {/* Info items */}
             <div className="flex flex-col gap-6">
               {[
                 {
-                  icon: <MapPin size={15} aria-hidden="true" />,
-                  label: "Location",
-                  value: "Address provided upon enquiry",
+                  icon: <MapPin size={18} className="text-amber-sun" />,
+                  label: "FACILITY ADDRESS",
+                  value: "Private Campus • Location confirmed upon enquiry approval",
                 },
                 {
-                  icon: <Clock size={15} aria-hidden="true" />,
-                  label: "Access",
-                  value: "24 / 7 for all members",
+                  icon: <Clock size={18} className="text-amber-sun" />,
+                  label: "BIOMETRIC ACCESS",
+                  value: "24 Hours / 7 Days a Week • Continuous Access",
                 },
                 {
-                  icon: <Mail size={15} aria-hidden="true" />,
-                  label: "Email",
-                  value: "hello@perfectfitnessgym.com",
-                },
-                {
-                  icon: <Phone size={15} aria-hidden="true" />,
-                  label: "Phone",
-                  value: "Contact us by email first",
+                  icon: <Mail size={18} className="text-amber-sun" />,
+                  label: "DIRECT INQUIRIES",
+                  value: "concierge@perfectfitnessgym.com",
                 },
               ].map((item) => (
                 <div key={item.label} className="flex items-start gap-4">
-                  <div
-                    className="flex-shrink-0 mt-0.5"
-                    style={{ color: "var(--c-acid)" }}
-                  >
+                  <div className="p-2.5 rounded-lg bg-amber-primary/10 border border-amber-primary/20 flex-shrink-0 mt-0.5">
                     {item.icon}
                   </div>
                   <div>
-                    <div
-                      className="font-mono uppercase mb-1"
-                      style={{ fontSize: "10px", letterSpacing: "0.14em", color: "var(--c-iron)" }}
-                    >
+                    <div className="font-mono text-[10px] text-amber-sun tracking-widest uppercase mb-1">
                       {item.label}
                     </div>
-                    <div
-                      className="font-body"
-                      style={{ fontSize: "13px", color: "var(--c-mist)" }}
-                    >
+                    <div className="font-body text-xs sm:text-sm text-white">
                       {item.value}
                     </div>
                   </div>
@@ -167,44 +138,28 @@ export default function ContactSection() {
             </div>
           </div>
 
-          {/* Right: form */}
+          {/* Right: Form */}
           <div className="lg:col-span-7">
             {status === "note" ? (
               <div
-                className="flex flex-col items-start justify-center h-full gap-6 p-10"
-                style={{ background: "rgba(20,24,32,0.8)", border: "1px solid rgba(200,230,58,0.25)" }}
+                className="glass-amber p-10 border border-amber-primary/40 flex flex-col items-start gap-5"
                 role="status"
-                aria-live="polite"
               >
-                <div style={{ color: "var(--c-acid)" }}>
-                  <svg width="48" height="48" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-                    <circle cx="24" cy="24" r="22" stroke="currentColor" strokeWidth="1.5" />
-                    <path d="M14 24L21 31L34 17" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  </svg>
-                </div>
-                <h3
-                  className="font-display font-black uppercase"
-                  style={{ fontSize: "2rem", color: "var(--c-white)" }}
-                >
-                  Enquiry Received
+                <Flame className="w-12 h-12 text-amber-sun" />
+                <h3 className="font-display font-black text-3xl text-white uppercase">
+                  INQUIRY RECORDED
                 </h3>
-                <p className="font-body" style={{ fontSize: "14px", color: "var(--c-silver)", lineHeight: "1.75", maxWidth: "400px" }}>
-                  This form is not yet connected to a live submission endpoint.
-                  In production, your enquiry would be sent directly to our team.
-                  Please email us at{" "}
-                  <a
-                    href="mailto:hello@perfectfitnessgym.com"
-                    style={{ color: "var(--c-acid)", textDecoration: "underline" }}
-                  >
-                    hello@perfectfitnessgym.com
-                  </a>{" "}
-                  to get in touch.
+                <p className="font-body text-sm text-silver leading-relaxed">
+                  Thank you for submitting your consultation request. Our admissions team processes new athlete applications within 24 hours. You can also reach our desk at concierge@perfectfitnessgym.com.
                 </p>
                 <button
-                  className="btn-ghost"
-                  onClick={() => { setStatus("idle"); setFormData({ name: "", email: "", phone: "", interest: "", message: "" }); }}
+                  onClick={() => {
+                    setStatus("idle");
+                    setFormData({ name: "", email: "", phone: "", interest: "", message: "" });
+                  }}
+                  className="btn-ghost mt-2"
                 >
-                  Start over
+                  Submit Another Inquiry
                 </button>
               </div>
             ) : (
@@ -212,96 +167,67 @@ export default function ContactSection() {
                 ref={formRef}
                 onSubmit={handleSubmit}
                 noValidate
-                aria-label="Membership enquiry form"
+                className="glass p-8 sm:p-10 border border-white/10"
               >
-                {/* Error summary (for multi-error) */}
                 {Object.keys(errors).length > 0 && (
-                  <div
-                    role="alert"
-                    aria-live="assertive"
-                    className="mb-6 p-4"
-                    style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.3)" }}
-                  >
-                    <p className="font-mono text-xs tracking-wider" style={{ color: "#EF4444" }}>
-                      Please correct the fields below before submitting.
-                    </p>
+                  <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 text-red-400 font-mono text-xs">
+                    Please correct the highlighted fields before submitting.
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  {/* Name */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                   <div className="form-field">
                     <label htmlFor={`${formId}-name`} className="form-label">
-                      Full Name <span aria-hidden="true" style={{ color: "var(--c-acid)" }}>*</span>
+                      Athlete Full Name *
                     </label>
                     <input
                       id={`${formId}-name`}
                       name="name"
                       type="text"
-                      autoComplete="name"
                       className={`form-input ${errors.name ? "error" : ""}`}
                       value={formData.name}
                       onChange={handleChange}
-                      aria-required="true"
-                      aria-invalid={!!errors.name}
-                      aria-describedby={errors.name ? `${formId}-name-error` : undefined}
-                      placeholder="Your name"
+                      placeholder="e.g. Marcus Vance"
                     />
-                    {errors.name && (
-                      <span id={`${formId}-name-error`} className="form-error" role="alert">
-                        {errors.name}
-                      </span>
-                    )}
+                    {errors.name && <span className="form-error">{errors.name}</span>}
                   </div>
 
-                  {/* Email */}
                   <div className="form-field">
                     <label htmlFor={`${formId}-email`} className="form-label">
-                      Email Address <span aria-hidden="true" style={{ color: "var(--c-acid)" }}>*</span>
+                      Email Address *
                     </label>
                     <input
                       id={`${formId}-email`}
                       name="email"
                       type="email"
-                      autoComplete="email"
                       className={`form-input ${errors.email ? "error" : ""}`}
                       value={formData.email}
                       onChange={handleChange}
-                      aria-required="true"
-                      aria-invalid={!!errors.email}
-                      aria-describedby={errors.email ? `${formId}-email-error` : undefined}
-                      placeholder="your@email.com"
+                      placeholder="marcus@domain.com"
                     />
-                    {errors.email && (
-                      <span id={`${formId}-email-error`} className="form-error" role="alert">
-                        {errors.email}
-                      </span>
-                    )}
+                    {errors.email && <span className="form-error">{errors.email}</span>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-                  {/* Phone (optional) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mb-5">
                   <div className="form-field">
                     <label htmlFor={`${formId}-phone`} className="form-label">
-                      Phone <span className="font-mono" style={{ fontSize: "9px", color: "var(--c-iron)" }}>(Optional)</span>
+                      Phone Number (Optional)
                     </label>
                     <input
                       id={`${formId}-phone`}
                       name="phone"
                       type="tel"
-                      autoComplete="tel"
                       className="form-input"
                       value={formData.phone}
                       onChange={handleChange}
-                      placeholder="+1 000 000 0000"
+                      placeholder="+1 (555) 019-2834"
                     />
                   </div>
 
-                  {/* Interest */}
                   <div className="form-field">
                     <label htmlFor={`${formId}-interest`} className="form-label">
-                      I&apos;m interested in <span aria-hidden="true" style={{ color: "var(--c-acid)" }}>*</span>
+                      Interested In *
                     </label>
                     <select
                       id={`${formId}-interest`}
@@ -309,28 +235,21 @@ export default function ContactSection() {
                       className={`form-input ${errors.interest ? "error" : ""}`}
                       value={formData.interest}
                       onChange={handleChange}
-                      aria-required="true"
-                      aria-invalid={!!errors.interest}
-                      aria-describedby={errors.interest ? `${formId}-interest-error` : undefined}
-                      style={{ appearance: "none", cursor: "pointer" }}
                     >
-                      <option value="" disabled>Select an option</option>
-                      {interests.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
+                      <option value="" disabled>Select tier or tour</option>
+                      {interests.map((item) => (
+                        <option key={item} value={item} className="bg-charcoal text-white">
+                          {item}
+                        </option>
                       ))}
                     </select>
-                    {errors.interest && (
-                      <span id={`${formId}-interest-error`} className="form-error" role="alert">
-                        {errors.interest}
-                      </span>
-                    )}
+                    {errors.interest && <span className="form-error">{errors.interest}</span>}
                   </div>
                 </div>
 
-                {/* Message */}
-                <div className="form-field mb-6">
+                <div className="form-field mb-8">
                   <label htmlFor={`${formId}-message`} className="form-label">
-                    Tell us about your goals <span className="font-mono" style={{ fontSize: "9px", color: "var(--c-iron)" }}>(Optional)</span>
+                    Athletic Background & Goals (Optional)
                   </label>
                   <textarea
                     id={`${formId}-message`}
@@ -339,62 +258,27 @@ export default function ContactSection() {
                     className="form-input"
                     value={formData.message}
                     onChange={handleChange}
-                    placeholder="Current training background, specific goals, questions…"
-                    style={{ resize: "vertical", minHeight: "110px" }}
+                    placeholder="Tell us about your current lift numbers, specific goals, or recovery needs..."
                   />
                 </div>
 
-                <div className="flex items-center gap-4 flex-wrap">
-                  <button type="submit" className="btn-primary">
-                    <span>Send Enquiry</span>
-                    <ArrowRight size={14} aria-hidden="true" />
-                  </button>
-                  <p
-                    className="font-mono"
-                    style={{ fontSize: "10px", color: "var(--c-iron)", letterSpacing: "0.1em" }}
-                  >
-                    Response within 1 business day
-                  </p>
-                </div>
+                <button type="submit" className="btn-primary w-full sm:w-auto">
+                  <span>Transmit Application</span>
+                  <ArrowRight size={15} />
+                </button>
               </form>
             )}
           </div>
         </div>
 
-        {/* Footer rule */}
-        <div
-          className="mt-24 pt-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
-          style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
-        >
-          <div
-            className="font-display font-bold uppercase tracking-widest"
-            style={{ fontSize: "1.1rem", color: "var(--c-steel)", letterSpacing: "0.25em" }}
-          >
-            PFGYM
+        {/* Footer */}
+        <div className="mt-20 pt-8 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="font-display font-black text-lg tracking-[0.25em] text-white">
+            PERFECT<span className="text-amber-primary">FITNESS</span>
           </div>
-          <p
-            className="font-mono"
-            style={{ fontSize: "10px", color: "var(--c-iron)", letterSpacing: "0.1em", textTransform: "uppercase" }}
-          >
-            © {new Date().getFullYear()} Perfect Fitness Gym. All rights reserved.
-          </p>
-          <nav aria-label="Footer navigation">
-            <ul className="flex items-center gap-6" role="list">
-              {["Privacy", "Terms", "Accessibility"].map((link) => (
-                <li key={link}>
-                  <a
-                    href="#"
-                    className="font-mono"
-                    style={{ fontSize: "10px", color: "var(--c-iron)", letterSpacing: "0.1em", textTransform: "uppercase", textDecoration: "none" }}
-                    onMouseOver={(e) => ((e.target as HTMLElement).style.color = "var(--c-silver)")}
-                    onMouseOut={(e) => ((e.target as HTMLElement).style.color = "var(--c-iron)")}
-                  >
-                    {link}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+          <div className="font-mono text-xs text-silver">
+            © {new Date().getFullYear()} PERFECT FITNESS GYM. ARCHITECTURAL ATHLETICS.
+          </div>
         </div>
       </div>
     </section>

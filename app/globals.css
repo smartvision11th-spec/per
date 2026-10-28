@@ -5,33 +5,38 @@
 @tailwind utilities;
 
 /* ─────────────────────────────────────────────────────────
-   DESIGN SYSTEM TOKENS
-   Strength in Motion · Perfect Fitness Gym
+   DESIGN SYSTEM TOKENS - LUXURY AMBER / SOLAR INDUSTRIAL GYM
+   Theme: Molten Core / High-performance Athletic Shader Aesthetic
    ───────────────────────────────────────────────────────── */
 :root {
   --font-display: 'Barlow Condensed', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
-  --c-void: #080A0D;
-  --c-ink: #0D1117;
-  --c-charcoal: #141820;
-  --c-slate: #1E2532;
-  --c-steel: #2A3347;
-  --c-iron: #4A5568;
-  --c-silver: #8A94A6;
-  --c-mist: #C4CAD6;
-  --c-white: #F0F2F5;
-  --c-pure: #FFFFFF;
+  /* Surfaces */
+  --c-void: #030406;
+  --c-ink: #07090D;
+  --c-charcoal: #0F1219;
+  --c-slate: #181D26;
+  --c-steel: #242B38;
+  --c-iron: #525C6C;
+  --c-silver: #9AA4B5;
+  --c-mist: #D5DBE5;
+  --c-white: #FFFFFF;
 
-  --c-acid: #C8E63A;
-  --c-acid-dim: rgba(200, 230, 58, 0.15);
-  --c-acid-glow: rgba(200, 230, 58, 0.08);
+  /* Radiant Amber / Orange Molten Spectrum */
+  --c-amber-primary: #FF7300;
+  --c-amber-glow: rgba(255, 115, 0, 0.28);
+  --c-amber-gold: #F59E0B;
+  --c-amber-sun: #FBBF24;
+  --c-amber-dim: rgba(245, 158, 11, 0.12);
 
-  --c-chrome: #D4D9E0;
+  /* Metallic Silver Details */
+  --c-chrome: #E2E8F0;
 
-  --c-border: rgba(255, 255, 255, 0.06);
-  --c-border-strong: rgba(255, 255, 255, 0.12);
+  --c-border: rgba(255, 153, 0, 0.12);
+  --c-border-subtle: rgba(255, 255, 255, 0.07);
+  --c-border-strong: rgba(255, 140, 0, 0.35);
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
@@ -47,35 +52,43 @@ html {
 
 body {
   background-color: var(--c-void);
-  color: var(--c-white);
+  color: var(--c-mist);
   font-family: var(--font-body);
   overflow-x: hidden;
   line-height: 1.6;
 }
 
 ::selection {
-  background: var(--c-acid);
-  color: var(--c-void);
+  background: var(--c-amber-primary);
+  color: #000;
 }
 
-::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar { width: 6px; }
 ::-webkit-scrollbar-track { background: var(--c-void); }
-::-webkit-scrollbar-thumb { background: var(--c-steel); border-radius: 999px; }
-::-webkit-scrollbar-thumb:hover { background: var(--c-acid); }
+::-webkit-scrollbar-thumb { background: #261F16; border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: var(--c-amber-primary); }
 
 /* LAYOUT */
 .container-gym {
-  max-width: 1340px;
+  max-width: 1360px;
   margin: 0 auto;
   padding: 0 clamp(20px, 5vw, 80px);
 }
 
-/* GLASS */
+/* GLASS / SHADER SURFACES */
 .glass {
-  background: rgba(14, 18, 28, 0.7);
+  background: rgba(15, 18, 25, 0.72);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid var(--c-border);
+}
+
+.glass-amber {
+  background: linear-gradient(135deg, rgba(255, 115, 0, 0.08) 0%, rgba(15, 18, 25, 0.8) 100%);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--c-border-strong);
+  box-shadow: 0 0 50px -15px rgba(255, 115, 0, 0.25);
 }
 
 /* TYPOGRAPHY */
@@ -85,9 +98,9 @@ body {
 .label-overline {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
-  color: var(--c-acid);
+  color: var(--c-amber-sun);
 }
 
 .leader-line {
@@ -105,8 +118,21 @@ body {
   content: '';
   width: 28px;
   height: 1px;
-  background: var(--c-acid);
+  background: var(--c-amber-primary);
   flex-shrink: 0;
+}
+
+/* AMBER SHADER GRADIENT TEXT */
+.text-gradient-amber {
+  background: linear-gradient(135deg, #FFF 10%, #FBBF24 50%, #FF7300 90%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-fire {
+  background: linear-gradient(135deg, #FDE68A 0%, #F59E0B 40%, #EA580C 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 /* BUTTONS */
@@ -114,28 +140,29 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 14px 34px;
-  background: var(--c-acid);
-  color: var(--c-void);
+  padding: 15px 36px;
+  background: linear-gradient(135deg, #FF7300 0%, #D95A00 100%);
+  color: #000;
   font-family: var(--font-body);
   font-size: 12px;
-  font-weight: 700;
-  letter-spacing: 0.1em;
+  font-weight: 800;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   border: none;
   cursor: pointer;
-  transition: all 0.25s var(--ease-out-expo);
+  transition: all 0.3s var(--ease-out-expo);
   clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
+  box-shadow: 0 4px 20px rgba(255, 115, 0, 0.35);
 }
 
 .btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 36px rgba(200,230,58,0.35);
-  background: #D5EE42;
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 12px 36px rgba(255, 115, 0, 0.55);
+  background: linear-gradient(135deg, #FF881A 0%, #EA580C 100%);
 }
 
 .btn-primary:focus-visible {
-  outline: 2px solid var(--c-acid);
+  outline: 2px solid var(--c-amber-sun);
   outline-offset: 3px;
 }
 
@@ -143,28 +170,25 @@ body {
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 13px 34px;
-  background: transparent;
+  padding: 14px 34px;
+  background: rgba(255, 115, 0, 0.05);
   color: var(--c-mist);
   font-family: var(--font-body);
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid var(--c-border-strong);
+  border: 1px solid var(--c-border);
   cursor: pointer;
-  transition: all 0.2s var(--ease-out-quart);
+  transition: all 0.25s var(--ease-out-quart);
+  backdrop-filter: blur(12px);
 }
 
 .btn-ghost:hover {
-  border-color: rgba(255,255,255,0.25);
+  border-color: var(--c-border-strong);
   color: var(--c-white);
-  background: rgba(255,255,255,0.04);
-}
-
-.btn-ghost:focus-visible {
-  outline: 2px solid var(--c-acid);
-  outline-offset: 3px;
+  background: rgba(255, 115, 0, 0.12);
+  box-shadow: 0 0 25px rgba(255, 115, 0, 0.15);
 }
 
 /* FORM */
@@ -185,19 +209,19 @@ body {
 .form-input {
   width: 100%;
   background: var(--c-charcoal);
-  border: 1px solid var(--c-border-strong);
+  border: 1px solid var(--c-border-subtle);
   color: var(--c-white);
   font-family: var(--font-body);
   font-size: 14px;
-  padding: 13px 16px;
+  padding: 14px 18px;
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   border-radius: 0;
 }
 
 .form-input:focus {
-  border-color: rgba(200, 230, 58, 0.5);
-  box-shadow: 0 0 0 3px rgba(200, 230, 58, 0.08);
+  border-color: var(--c-amber-primary);
+  box-shadow: 0 0 0 3px rgba(255, 115, 0, 0.15);
 }
 
 .form-input::placeholder { color: var(--c-iron); }
@@ -209,36 +233,29 @@ body {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-.animate-marquee { animation: marquee-scroll 50s linear infinite; }
+.animate-marquee { animation: marquee-scroll 45s linear infinite; }
 
-/* NOISE */
+/* AMBER GLOW & NOISE */
 .noise-overlay {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 9998;
-  opacity: 0.018;
+  opacity: 0.02;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-repeat: repeat;
   background-size: 200px;
 }
 
-/* SECTION DIVIDER */
-.rule-thin {
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--c-border) 20%, var(--c-border) 80%, transparent);
-}
-
-/* ANNOTATION HORIZONTAL */
 .h-annotation {
   display: flex;
   align-items: center;
   gap: 14px;
   font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.18em;
   text-transform: uppercase;
-  color: var(--c-iron);
+  color: var(--c-amber-sun);
 }
 .h-annotation::before, .h-annotation::after {
   content: '';
@@ -247,7 +264,6 @@ body {
   background: var(--c-border);
 }
 
-/* REDUCED MOTION */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
