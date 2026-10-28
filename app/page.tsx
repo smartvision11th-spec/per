@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import BentoAmenities from "@/components/BentoAmenities";
+import InteractiveCalculator from "@/components/InteractiveCalculator";
 import ClassSchedule from "@/components/ClassSchedule";
 import PricingMatrix from "@/components/PricingMatrix";
 import Trainers from "@/components/Trainers";
@@ -18,32 +19,35 @@ export default function Home() {
   const handleCloseBooking = () => setIsBookingOpen(false);
 
   return (
-    <main className="min-h-screen bg-background relative selection:bg-brand-orange selection:text-white">
-      {/* Top Navbar */}
+    <main className="min-h-screen bg-dark-950 text-slate-100 relative selection:bg-brand-orange selection:text-white">
+      {/* 21st.dev Floating Glassmorphism Navbar */}
       <Navbar onOpenBooking={handleOpenBooking} />
 
-      {/* Hero Section with 3D Canvas */}
+      {/* Cinematic 3D Kinetic Hero Section */}
       <HeroSection onOpenBooking={handleOpenBooking} />
 
-      {/* 21st.dev Style Bento Grid Amenities */}
+      {/* 21st.dev Spotlight Bento Grid Amenities */}
       <BentoAmenities />
 
-      {/* Daily Class Timetable */}
+      {/* Interactive 1-Rep Max & Telemetry Calculator */}
+      <InteractiveCalculator onOpenBooking={handleOpenBooking} />
+
+      {/* Daily Studio Class Schedule */}
       <ClassSchedule onOpenBooking={handleOpenBooking} />
 
-      {/* Pricing Matrix & Membership Comparison */}
+      {/* Dynamic 3-Tier Pricing Matrix */}
       <PricingMatrix onOpenBooking={handleOpenBooking} />
 
-      {/* World-Class Coaches */}
+      {/* Certified Master Coaches */}
       <Trainers onOpenBooking={handleOpenBooking} />
 
-      {/* Member Testimonials & Verified Metrics */}
+      {/* Social Proof & Verified Reviews */}
       <Testimonials />
 
-      {/* Footer & Contact */}
+      {/* Full Facility Footer */}
       <Footer />
 
-      {/* Interactive Free Day Pass Booking Modal */}
+      {/* Interactive 24-Hour VIP Digital Pass Modal */}
       <BookingModal isOpen={isBookingOpen} onClose={handleCloseBooking} />
     </main>
   );

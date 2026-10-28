@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,58 +6,95 @@
 
 :root {
   --font-bebas: 'Bebas Neue', sans-serif;
-  --font-inter: 'Inter', sans-serif;
+  --font-jakarta: 'Plus Jakarta Sans', sans-serif;
+  --font-space: 'Space Grotesk', sans-serif;
 }
 
 body {
-  background-color: #090A0F;
+  background-color: #060709;
   color: #F8FAFC;
-  font-family: var(--font-inter);
+  font-family: var(--font-jakarta);
   overflow-x: hidden;
-  selection-background-color: #FF5500;
+  selection-background-color: #FF4D00;
   selection-color: #FFFFFF;
 }
 
-::selection {
-  background-color: #FF5500;
-  color: #FFFFFF;
-}
-
-/* Glassmorphism helpers */
-.glass-panel {
-  background: rgba(18, 22, 34, 0.75);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+/* Luxury dark glassmorphism */
+.glass-card {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%), rgba(11, 14, 22, 0.7);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.glass-panel-glow {
-  background: rgba(18, 22, 34, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255, 85, 0, 0.35);
-  box-shadow: 0 0 30px -5px rgba(255, 85, 0, 0.2);
+.glass-card-glow {
+  background: linear-gradient(135deg, rgba(255, 77, 0, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%), rgba(11, 14, 22, 0.85);
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border: 1px solid rgba(255, 77, 0, 0.35);
+  box-shadow: 0 0 50px -10px rgba(255, 77, 0, 0.25), inset 0 1px 0 0 rgba(255, 255, 255, 0.2);
 }
 
-/* Subtle grid backdrop */
-.bg-grid-pattern {
-  background-size: 40px 40px;
-  background-image: 
-    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+/* 21st.dev Spotlight Effect Base */
+.spotlight-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.spotlight-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: radial-gradient(800px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(255, 77, 0, 0.12), transparent 40%);
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.spotlight-card:hover::before {
+  opacity: 1;
+}
+
+/* Text outline effects */
+.text-outline {
+  -webkit-text-stroke: 1.5px rgba(255, 255, 255, 0.2);
+  color: transparent;
+}
+
+.text-outline-orange {
+  -webkit-text-stroke: 1.5px rgba(255, 77, 0, 0.6);
+  color: transparent;
+}
+
+/* Animated Border Beam */
+@keyframes border-beam {
+  100% {
+    offset-distance: 100%;
+  }
+}
+
+.animate-border-beam {
+  animation: border-beam 6s linear infinite;
+}
+
+/* Subtle noise texture */
+.bg-noise {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 0);
+  background-size: 24px 24px;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 7px;
 }
 ::-webkit-scrollbar-track {
-  background: #090A0F;
+  background: #060709;
 }
 ::-webkit-scrollbar-thumb {
-  background: #1F2433;
-  border-radius: 4px;
+  background: #1E2330;
+  border-radius: 999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #FF5500;
+  background: #FF4D00;
 }

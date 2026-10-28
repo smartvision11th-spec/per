@@ -1,134 +1,178 @@
 "use client";
 
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useState, useEffect, useMemo } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Float, ContactShadows, PerspectiveCamera } from "@react-three/drei";
+import { Float, ContactShadows, PerspectiveCamera, Sparkles } from "@react-three/drei";
 import * as THREE from "three";
 
-// 3D Dumbbell / Kettlebell Hybrid Mesh with Metallic Material and Glowing Core
-function GymCore3D() {
-  const meshGroup = useRef<THREE.Group>(null);
-  const ringRef = useRef<THREE.Mesh>(null);
+// High-detail Sculpted 3D Dumbbell & Kinetic Rings
+function SculptedGymCore() {
+  const groupRef = useRef<THREE.Group>(null);
+  const outerRingRef = useRef<THREE.Mesh>(null);
+  const innerRingRef = useRef<THREE.Mesh>(null);
   const [hovered, setHovered] = useState(false);
 
+  // Mouse smooth dampening
   useFrame((state) => {
-    if (!meshGroup.current) return;
+    if (!groupRef.current) return;
     const t = state.clock.getElapsedTime();
-    // Smooth idle oscillation
-    meshGroup.current.rotation.y = t * 0.45;
-    meshGroup.current.rotation.x = Math.sin(t * 0.35) * 0.15;
-    meshGroup.current.position.y = Math.sin(t * 1.2) * 0.1;
 
-    // Mouse parallax tracking
-    const targetX = (state.pointer.x * Math.PI) / 8;
-    const targetY = (state.pointer.y * Math.PI) / 8;
-    meshGroup.current.rotation.y += (targetX - meshGroup.current.rotation.y) * 0.05;
-    meshGroup.current.rotation.x += (-targetY - meshGroup.current.rotation.x) * 0.05;
+    // Natural athletic floating breathing motion
+    groupRef.current.position.y = Math.sin(t * 1.5) * 0.12;
+    
+    // Interactive cursor parallax (quicker, responsive damping)
+    const targetRotY = (state.pointer.x * Math.PI) / 3.5 + t * 0.25;
+    const targetRotX = (-state.pointer.y * Math.PI) / 4 + Math.sin(t * 0.6) * 0.1;
+    
+    groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, targetRotY, 0.08);
+    groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, targetRotX, 0.08);
 
-    // Glowing energy ring rotation
-    if (ringRef.current) {
-      ringRef.current.rotation.z = -t * 0.8;
-      ringRef.current.rotation.x = Math.cos(t * 0.6) * 0.3;
+    // Counter-rotating kinetic energy rings
+    if (outerRingRef.current) {
+      outerRingRef.current.rotation.z = t * 0.7;
+      outerRingRef.current.rotation.x = Math.sin(t * 0.5) * 0.4;
+    }
+    if (innerRingRef.current) {
+      innerRingRef.current.rotation.z = -t * 1.1;
+      innerRingRef.current.rotation.y = Math.cos(t * 0.7) * 0.5;
     }
   });
 
   return (
     <group
-      ref={meshGroup}
+      ref={groupRef}
       onPointerOver={() => setHovered(true)}
       onPointerOut={() => setHovered(false)}
-      scale={hovered ? 1.08 : 1}
+      scale={hovered ? 1.06 : 1}
+      position={[0, 0, 0]}
     >
-      {/* Central Brushed Steel Handle */}
+      {/* Central Ergonomic Knurled Steel Bar */}
       <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.22, 0.22, 2.6, 32]} />
+        <cylinderGeometry args={[0.26, 0.26, 3.4, 48]} />
         <meshStandardMaterial
-          color="#94A3B8"
-          metalness={0.95}
-          roughness={0.15}
-          bumpScale={0.05}
+          color="#E2E8F0"
+          metalness={0.98}
+          roughness={0.12}
         />
       </mesh>
 
-      {/* Knurled Grip Texture Rings on Handle */}
-      {[-0.5, 0, 0.5].map((pos, idx) => (
-        <mesh key={idx} position={[pos, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.23, 0.23, 0.3, 24]} />
+      {/* Textured Diamond Knurl Grips (Neon Orange Insets) */}
+      {[-0.8, -0.27, 0.27, 0.8].map((x, i) => (
+        <mesh key={i} position={[x, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.275, 0.275, 0.38, 32]} />
           <meshStandardMaterial
-            color="#FF5500"
-            emissive="#FF5500"
-            emissiveIntensity={hovered ? 0.9 : 0.4}
-            metalness={0.8}
-            roughness={0.3}
+            color="#FF4D00"
+            emissive="#FF3300"
+            emissiveIntensity={hovered ? 0.8 : 0.4}
+            metalness={0.9}
+            roughness={0.25}
           />
         </mesh>
       ))}
 
-      {/* Left Heavy Calibrated Plates (Hexagonal Design) */}
-      <group position={[-1.6, 0, 0]}>
-        {/* Main Inner Plate */}
+      {/* Left Heavy Plate Assembly */}
+      <group position={[-2.1, 0, 0]}>
+        {/* Main 45LB Calibrated Steel Plate */}
         <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[1.35, 1.35, 0.45, 6]} />
+          <cylinderGeometry args={[1.7, 1.7, 0.5, 8]} />
           <meshStandardMaterial
-            color="#121622"
-            metalness={0.85}
-            roughness={0.25}
+            color="#0B0E16"
+            metalness={0.92}
+            roughness={0.18}
           />
         </mesh>
-        {/* Outer Accent Plate */}
-        <mesh position={[-0.32, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[1.15, 1.15, 0.3, 6]} />
+        {/* Deep Rim Lip */}
+        <mesh rotation={[0, 0, Math.PI / 2]}>
+          <torusGeometry args={[1.6, 0.08, 16, 48]} />
           <meshStandardMaterial
-            color="#FF5500"
-            emissive="#FF3300"
-            emissiveIntensity={0.2}
-            metalness={0.9}
+            color="#FF4D00"
+            emissive="#FF4D00"
+            emissiveIntensity={hovered ? 1.4 : 0.7}
+            metalness={0.8}
             roughness={0.2}
           />
         </mesh>
-        {/* Chrome Collar Cap */}
-        <mesh position={[-0.55, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.4, 0.4, 0.2, 24]} />
-          <meshStandardMaterial color="#FFFFFF" metalness={0.98} roughness={0.1} />
+        {/* Secondary 25LB Accent Plate */}
+        <mesh position={[-0.42, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[1.4, 1.4, 0.35, 8]} />
+          <meshStandardMaterial
+            color="#141A29"
+            metalness={0.95}
+            roughness={0.15}
+          />
+        </mesh>
+        {/* Mirror Chrome Olympic Collar Lock */}
+        <mesh position={[-0.75, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.52, 0.52, 0.3, 32]} />
+          <meshStandardMaterial
+            color="#FFFFFF"
+            metalness={1.0}
+            roughness={0.05}
+          />
         </mesh>
       </group>
 
-      {/* Right Heavy Calibrated Plates (Hexagonal Design) */}
-      <group position={[1.6, 0, 0]}>
-        {/* Main Inner Plate */}
+      {/* Right Heavy Plate Assembly */}
+      <group position={[2.1, 0, 0]}>
+        {/* Main 45LB Calibrated Steel Plate */}
         <mesh rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[1.35, 1.35, 0.45, 6]} />
+          <cylinderGeometry args={[1.7, 1.7, 0.5, 8]} />
           <meshStandardMaterial
-            color="#121622"
-            metalness={0.85}
-            roughness={0.25}
+            color="#0B0E16"
+            metalness={0.92}
+            roughness={0.18}
           />
         </mesh>
-        {/* Outer Accent Plate */}
-        <mesh position={[0.32, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[1.15, 1.15, 0.3, 6]} />
+        {/* Deep Rim Lip */}
+        <mesh rotation={[0, 0, Math.PI / 2]}>
+          <torusGeometry args={[1.6, 0.08, 16, 48]} />
           <meshStandardMaterial
-            color="#FF5500"
-            emissive="#FF3300"
-            emissiveIntensity={0.2}
-            metalness={0.9}
+            color="#FF4D00"
+            emissive="#FF4D00"
+            emissiveIntensity={hovered ? 1.4 : 0.7}
+            metalness={0.8}
             roughness={0.2}
           />
         </mesh>
-        {/* Chrome Collar Cap */}
-        <mesh position={[0.55, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
-          <cylinderGeometry args={[0.4, 0.4, 0.2, 24]} />
-          <meshStandardMaterial color="#FFFFFF" metalness={0.98} roughness={0.1} />
+        {/* Secondary 25LB Accent Plate */}
+        <mesh position={[0.42, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[1.4, 1.4, 0.35, 8]} />
+          <meshStandardMaterial
+            color="#141A29"
+            metalness={0.95}
+            roughness={0.15}
+          />
+        </mesh>
+        {/* Mirror Chrome Olympic Collar Lock */}
+        <mesh position={[0.75, 0, 0]} rotation={[0, 0, Math.PI / 2]}>
+          <cylinderGeometry args={[0.52, 0.52, 0.3, 32]} />
+          <meshStandardMaterial
+            color="#FFFFFF"
+            metalness={1.0}
+            roughness={0.05}
+          />
         </mesh>
       </group>
 
-      {/* Orbiting Kinetic Energy Ring (Performance Indicator) */}
-      <mesh ref={ringRef}>
-        <torusGeometry args={[2.2, 0.04, 16, 64]} />
+      {/* Outer Gyroscopic Kinetic Energy Halo */}
+      <mesh ref={outerRingRef}>
+        <torusGeometry args={[2.75, 0.045, 24, 80]} />
         <meshStandardMaterial
           color="#00F2FE"
           emissive="#00F2FE"
-          emissiveIntensity={hovered ? 2.0 : 1.2}
+          emissiveIntensity={hovered ? 2.5 : 1.6}
+          transparent
+          opacity={0.85}
+        />
+      </mesh>
+
+      {/* Inner Kinetic Velocity Ring */}
+      <mesh ref={innerRingRef}>
+        <torusGeometry args={[2.2, 0.035, 20, 64]} />
+        <meshStandardMaterial
+          color="#FF4D00"
+          emissive="#FF4D00"
+          emissiveIntensity={hovered ? 2.8 : 1.8}
           transparent
           opacity={0.8}
         />
@@ -137,114 +181,82 @@ function GymCore3D() {
   );
 }
 
-// Sparkle Particle Field
-function SparkleField() {
-  const pointsRef = useRef<THREE.Points>(null);
-
-  const particlesCount = 70;
-  const positions = React.useMemo(() => {
-    const pos = new Float32Array(particlesCount * 3);
-    for (let i = 0; i < particlesCount; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 8;
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 8;
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 8;
-    }
-    return pos;
-  }, []);
-
-  useFrame((state) => {
-    if (!pointsRef.current) return;
-    pointsRef.current.rotation.y = state.clock.getElapsedTime() * 0.08;
-  });
-
-  return (
-    <points ref={pointsRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particlesCount}
-          array={positions}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.06}
-        color="#FF5500"
-        transparent
-        opacity={0.6}
-        blending={THREE.AdditiveBlending}
-      />
-    </points>
-  );
-}
-
 export default function HeroCanvas() {
-  const [hasWebGL, setHasWebGL] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    try {
-      const canvas = document.createElement("canvas");
-      const gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
-      if (!gl) setHasWebGL(false);
-    } catch {
-      setHasWebGL(false);
-    }
+    setMounted(true);
   }, []);
 
-  if (!hasWebGL) {
+  if (!mounted) {
     return (
-      <div className="w-full h-full flex items-center justify-center p-8 bg-gradient-to-br from-surface to-slate-950 rounded-3xl border border-white/10">
-        <div className="text-center">
-          <div className="w-24 h-24 mx-auto rounded-full bg-brand-orange/20 border border-brand-orange/40 flex items-center justify-center mb-4">
-            <span className="text-4xl">🏋️</span>
-          </div>
-          <h3 className="font-display text-2xl text-white uppercase">Olympic Heavy Lifting</h3>
-          <p className="text-sm text-slate-400 mt-2">3D Performance Acceleration</p>
-        </div>
+      <div className="w-full h-[520px] lg:h-[680px] flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full border-2 border-brand-orange border-t-transparent animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="w-full h-[450px] sm:h-[550px] lg:h-[650px] relative">
-      {/* Background glow behind 3D object */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 sm:w-96 sm:h-96 rounded-full bg-brand-orange/20 blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/3 -translate-x-1/2 -translate-y-1/2 w-60 h-60 rounded-full bg-brand-cyan/15 blur-[90px] pointer-events-none" />
+    <div className="w-full h-[520px] sm:h-[600px] lg:h-[700px] relative select-none">
+      {/* Background Volumetric Neon Gradients */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[380px] h-[380px] sm:w-[500px] sm:h-[500px] rounded-full bg-brand-orange/20 blur-[130px] pointer-events-none" />
+      <div className="absolute top-1/4 left-1/3 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[320px] rounded-full bg-brand-cyan/20 blur-[110px] pointer-events-none" />
 
       <Canvas
         className="cursor-grab active:cursor-grabbing"
         gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
         dpr={[1, 2]}
       >
-        <PerspectiveCamera makeDefault position={[0, 0, 5.5]} fov={45} />
+        <PerspectiveCamera makeDefault position={[0, 0, 6.2]} fov={42} />
         
-        {/* Dynamic Studio Lighting */}
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[5, 8, 5]} intensity={1.5} color="#FFFFFF" />
-        <pointLight position={[-4, 3, -2]} intensity={2.5} color="#00F2FE" />
-        <pointLight position={[4, -2, 2]} intensity={3.0} color="#FF5500" />
-        <pointLight position={[0, 4, 3]} intensity={1.0} color="#FFFFFF" />
+        {/* Professional 3-Point Studio Lights */}
+        <ambientLight intensity={0.5} />
+        <directionalLight position={[6, 9, 6]} intensity={2.2} color="#FFFFFF" />
+        <pointLight position={[-5, 4, -2]} intensity={4.5} color="#00F2FE" />
+        <pointLight position={[5, -3, 3]} intensity={5.0} color="#FF4D00" />
+        <pointLight position={[0, 5, 2]} intensity={1.8} color="#FFFFFF" />
 
-        <Float speed={2} rotationIntensity={0.5} floatIntensity={0.6}>
-          <GymCore3D />
+        {/* Floating Sparks & Embers Field */}
+        <Sparkles
+          count={80}
+          scale={7}
+          size={2.8}
+          speed={0.6}
+          opacity={0.7}
+          color="#FF631F"
+        />
+        <Sparkles
+          count={40}
+          scale={6}
+          size={2.2}
+          speed={0.4}
+          opacity={0.5}
+          color="#00F2FE"
+        />
+
+        <Float speed={1.8} rotationIntensity={0.4} floatIntensity={0.5}>
+          <SculptedGymCore />
         </Float>
 
-        <SparkleField />
-
         <ContactShadows
-          position={[0, -2.2, 0]}
-          opacity={0.65}
-          scale={7}
-          blur={2.5}
-          far={4}
+          position={[0, -2.6, 0]}
+          opacity={0.7}
+          scale={8}
+          blur={2.8}
+          far={5}
           color="#000000"
         />
       </Canvas>
 
-      {/* Floating 3D Interaction Hint */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-white/10 backdrop-blur-md text-[11px] font-medium text-slate-400 pointer-events-none shadow-lg">
-        <span className="w-1.5 h-1.5 rounded-full bg-brand-orange animate-ping" />
-        <span>Interactive 3D • Drag to rotate equipment</span>
+      {/* Floating 21st.dev Style Interactive Telemetry Pill */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3 px-4 py-2 rounded-full glass-card border border-white/10 shadow-2xl backdrop-blur-xl text-xs font-mono text-slate-300 pointer-events-none">
+        <span className="flex h-2 w-2 relative">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-cyan opacity-75" />
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-cyan" />
+        </span>
+        <span className="tracking-wider uppercase text-[11px] font-bold text-white">
+          3D Kinetic Core • Drag To Explore
+        </span>
       </div>
     </div>
   );
