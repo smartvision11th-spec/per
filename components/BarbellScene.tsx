@@ -1,278 +1,475 @@
 "use client";
 
-import React, { useRef, useMemo } from "react";
+import React, { useRef, useMemo, useEffect } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { PerspectiveCamera } from "@react-three/drei";
+import { PerspectiveCamera, Environment, Float } from "@react-three/drei";
 import * as THREE from "three";
 
-// ─── Main Steel Bar ─────────────────────────────────────────────────────────
-function SteelBar() {
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: new THREE.Color("#CBD5E1"),
-    metalness: 0.98,
-    roughness: 0.08,
-    envMapIntensity: 1.6,
-  }), []);
+// ─── Procedural Knurl Bump & Roughness Texture Generator ─────────────────────
+function createKnurlTexture() {
+  const canvas = document.createElement("canvas");
+  canvas.width = 256;
+  canvas.height = 256;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return new THREE.Texture();
 
-  const knurlMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: new THREE.Color("#828B99"),
-    metalness: 0.95,
-    roughness: 0.25,
-    envMapIntensity: 1.2,
-  }), []);
+  ctx.fillStyle = "#808080";
+  ctx.fillRect(0, 0, 256, 256);
 
-  return (
-    <group>
-      {/* Main shaft */}
-      <mesh rotation={[0, 0, Math.PI / 2]} material={mat} castShadow>
-        <cylinderGeometry args={[0.085, 0.085, 7.2, 32]} />
-      </mesh>
-      {/* Knurl zones — left */}
-      <mesh position={[-1.4, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={knurlMat} castShadow>
-        <cylinderGeometry args={[0.094, 0.094, 1.2, 32]} />
-      </mesh>
-      {/* Knurl zones — right */}
-      <mesh position={[1.4, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={knurlMat} castShadow>
-        <cylinderGeometry args={[0.094, 0.094, 1.2, 32]} />
-      </mesh>
-      {/* Center knurl */}
-      <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={knurlMat} castShadow>
-        <cylinderGeometry args={[0.094, 0.094, 0.28, 32]} />
-      </mesh>
-    </group>
+  // Cross-hatch diamond knurling pattern
+  ctx.strokeStyle = "#ffffff";
+  ctx.lineWidth = 1.5;
+  for (let i = -256; i < 512; i += 12) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0);
+    ctx.lineTo(i + 256, 256);
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(i + 256, 0);
+    ctx.lineTo(i, 256);
+    ctx.stroke();
+  }
+
+  // Add micro noise dots
+  for (let j = 0; j < 3000; j++) {
+    const x = Math.random() * 256;
+    const y = Math.random() * 256;
+    const val = Math.floor(Math.random() * 255);
+    ctx.fillStyle = `rgb(${val},${val},${val})`;
+    ctx.fillRect(x, y, 1, 1);
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(8, 2);
+  return texture;
+}
+
+// ─── High-Fidelity Olympic Barbell Shaft ──────────────────────────────────────
+function PrecisionBarbellShaft() {
+  const knurlTexture = useMemo(() => {
+    if (typeof window !== "undefined") return createKnurlTexture();
+    return null;
+  }, []);
+
+  const steelMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#D8DFE8",
+        metalness: 0.98,
+        roughness: 0.12,
+        envMapIntensity: 2.2,
+      }),
+    []
   );
-}
 
-// ─── Weight Plate ────────────────────────────────────────────────────────────
-interface PlateProps {
-  radius: number;
-  thickness: number;
-  color: string;
-  accentColor?: string;
-  hasAccent?: boolean;
-}
+  const knurledMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#9EAAB8",
+        metalness: 0.94,
+        roughness: 0.35,
+        bumpMap: knurlTexture || undefined,
+        bumpScale: 0.04,
+        envMapIntensity: 1.8,
+      }),
+    [knurlTexture]
+  );
 
-function Plate({ radius, thickness, color, accentColor = "#FF7300", hasAccent = false }: PlateProps) {
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: new THREE.Color(color),
-    metalness: 0.92,
-    roughness: 0.18,
-    envMapIntensity: 1.3,
-  }), [color]);
-
-  const rimMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: new THREE.Color(accentColor),
-    metalness: 0.8,
-    roughness: 0.25,
-    envMapIntensity: 1.2,
-    emissive: new THREE.Color(accentColor),
-    emissiveIntensity: 0.28,
-  }), [accentColor]);
-
-  const holeMat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: new THREE.Color("#05070A"),
-    metalness: 0.7,
-    roughness: 0.35,
-  }), []);
+  const darkAlloyMaterial = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#1A202C",
+        metalness: 0.9,
+        roughness: 0.25,
+      }),
+    []
+  );
 
   return (
     <group>
-      {/* Main disc */}
-      <mesh rotation={[0, 0, Math.PI / 2]} material={mat} castShadow receiveShadow>
-        <cylinderGeometry args={[radius, radius, thickness, 40]} />
+      {/* Center 28mm Olympic Shaft */}
+      <mesh rotation={[0, 0, Math.PI / 2]} material={steelMaterial} castShadow>
+        <cylinderGeometry args={[0.075, 0.075, 7.4, 48]} />
       </mesh>
-      {/* Accent rim */}
-      {hasAccent && (
-        <mesh rotation={[0, 0, Math.PI / 2]} material={rimMat}>
-          <torusGeometry args={[radius * 0.88, thickness * 0.12, 12, 40]} />
+
+      {/* Knurled Grip Zones (Left & Right Competition Markings) */}
+      {[-1.5, -0.6, 0.6, 1.5].map((x, idx) => (
+        <mesh key={idx} position={[x, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={knurledMaterial} castShadow>
+          <cylinderGeometry args={[0.079, 0.079, 0.72, 48]} />
         </mesh>
-      )}
-      {/* Center hole */}
-      <mesh rotation={[0, 0, Math.PI / 2]} material={holeMat}>
-        <cylinderGeometry args={[0.132, 0.132, thickness + 0.01, 24]} />
+      ))}
+
+      {/* Precision Center Passive Knurl Ring */}
+      <mesh position={[0, 0, 0]} rotation={[0, 0, Math.PI / 2]} material={knurledMaterial} castShadow>
+        <cylinderGeometry args={[0.078, 0.078, 0.22, 48]} />
       </mesh>
-      {/* Spoke holes */}
-      {[0, Math.PI / 1.5, (Math.PI * 2) / 1.5].map((angle, i) => (
-        <mesh
-          key={i}
-          position={[
-            Math.cos(angle) * radius * 0.55,
-            0,
-            Math.sin(angle) * radius * 0.55,
-          ]}
-          rotation={[0, 0, Math.PI / 2]}
-          material={holeMat}
-        >
-          <cylinderGeometry args={[radius * 0.1, radius * 0.1, thickness + 0.01, 16]} />
-        </mesh>
+
+      {/* Left/Right Inner Collar Stops with Bevel */}
+      {[-2.2, 2.2].map((x, idx) => (
+        <group key={`stop-${idx}`} position={[x, 0, 0]}>
+          <mesh rotation={[0, 0, Math.PI / 2]} material={steelMaterial} castShadow>
+            <cylinderGeometry args={[0.18, 0.18, 0.12, 48]} />
+          </mesh>
+          <mesh rotation={[0, 0, Math.PI / 2]} material={darkAlloyMaterial}>
+            <torusGeometry args={[0.178, 0.02, 16, 48]} />
+          </mesh>
+        </group>
       ))}
     </group>
   );
 }
 
-// ─── Collar ─────────────────────────────────────────────────────────────────
-function Collar() {
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: new THREE.Color("#E2E8F0"),
-    metalness: 1.0,
-    roughness: 0.04,
-    envMapIntensity: 2.5,
-  }), []);
+// ─── 45LB / 20KG Competition Calibrated Bumper Plate ─────────────────────────
+interface CalibratedPlateProps {
+  color: string;
+  radius: number;
+  thickness: number;
+  weightLabel: string;
+  accentAmber?: boolean;
+}
+
+function CalibratedPlate({
+  color,
+  radius,
+  thickness,
+  weightLabel,
+  accentAmber = false,
+}: CalibratedPlateProps) {
+  const plateMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: color,
+        metalness: 0.88,
+        roughness: 0.22,
+        envMapIntensity: 1.4,
+      }),
+    [color]
+  );
+
+  const chromeHubMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#FFFFFF",
+        metalness: 1.0,
+        roughness: 0.06,
+        envMapIntensity: 3.0,
+      }),
+    []
+  );
+
+  const amberGlowMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#FF7300",
+        emissive: "#FF7300",
+        emissiveIntensity: 0.45,
+        metalness: 0.8,
+        roughness: 0.2,
+      }),
+    []
+  );
 
   return (
     <group>
-      <mesh rotation={[0, 0, Math.PI / 2]} material={mat} castShadow>
-        <cylinderGeometry args={[0.165, 0.165, 0.28, 32]} />
+      {/* Outer Rubber/Urethane Bumper Body */}
+      <mesh rotation={[0, 0, Math.PI / 2]} material={plateMat} castShadow receiveShadow>
+        <cylinderGeometry args={[radius, radius, thickness, 56]} />
       </mesh>
-      {/* Locking ridge with warm gold reflection */}
+
+      {/* Outer Flange Lip (Molded Rim) */}
+      <mesh rotation={[0, 0, Math.PI / 2]} material={accentAmber ? amberGlowMat : plateMat}>
+        <torusGeometry args={[radius * 0.92, thickness * 0.14, 16, 56]} />
+      </mesh>
+
+      {/* Inner Precision Stainless Hub Ring */}
+      <mesh rotation={[0, 0, Math.PI / 2]} material={chromeHubMat} castShadow>
+        <cylinderGeometry args={[0.32, 0.32, thickness + 0.015, 48]} />
+      </mesh>
+
+      {/* Center 50mm Olympic Sleeve Hole */}
       <mesh rotation={[0, 0, Math.PI / 2]}>
-        <cylinderGeometry args={[0.19, 0.19, 0.08, 32]} />
-        <meshStandardMaterial color="#FFB74D" metalness={0.9} roughness={0.1} />
+        <cylinderGeometry args={[0.135, 0.135, thickness + 0.03, 32]} />
+        <meshBasicMaterial color="#05070B" />
+      </mesh>
+
+      {/* Symmetric Kinetic Weight Relief Cutouts */}
+      {[0, Math.PI / 1.5, (Math.PI * 2) / 1.5].map((angle, idx) => (
+        <group
+          key={idx}
+          position={[
+            Math.cos(angle) * radius * 0.58,
+            0,
+            Math.sin(angle) * radius * 0.58,
+          ]}
+        >
+          <mesh rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[radius * 0.12, radius * 0.12, thickness + 0.02, 24]} />
+            <meshBasicMaterial color="#05070B" />
+          </mesh>
+          {/* Subtle amber chamfer glow inside cutout */}
+          {accentAmber && (
+            <mesh rotation={[0, 0, Math.PI / 2]} material={amberGlowMat}>
+              <torusGeometry args={[radius * 0.12, 0.01, 8, 24]} />
+            </mesh>
+          )}
+        </group>
+      ))}
+    </group>
+  );
+}
+
+// ─── Competition Quick-Release Olympic Collar ────────────────────────────────
+function OlympicCollar() {
+  const chromeMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#F8FAFC",
+        metalness: 1.0,
+        roughness: 0.05,
+        envMapIntensity: 2.8,
+      }),
+    []
+  );
+
+  const latchMat = useMemo(
+    () =>
+      new THREE.MeshStandardMaterial({
+        color: "#FF7300",
+        metalness: 0.9,
+        roughness: 0.2,
+        emissive: "#FF7300",
+        emissiveIntensity: 0.25,
+      }),
+    []
+  );
+
+  return (
+    <group>
+      {/* Cylindrical Clamping Ring */}
+      <mesh rotation={[0, 0, Math.PI / 2]} material={chromeMat} castShadow>
+        <cylinderGeometry args={[0.19, 0.19, 0.24, 40]} />
+      </mesh>
+      {/* Center lock flange */}
+      <mesh rotation={[0, 0, Math.PI / 2]} material={chromeMat}>
+        <cylinderGeometry args={[0.22, 0.22, 0.06, 40]} />
+      </mesh>
+      {/* Quick Release Tension Lever */}
+      <mesh position={[0, 0.24, 0]} material={latchMat}>
+        <boxGeometry args={[0.08, 0.16, 0.1]} />
       </mesh>
     </group>
   );
 }
 
-// ─── LivePart: position driven per-frame by scroll ref ───────────────────────
-interface LivePartProps {
-  assembled: [number, number, number];
-  exploded: [number, number, number];
-  scrollRef: React.MutableRefObject<number>;
-  delay: number;
+// ─── Smooth Per-Component Exploded Dynamic Trajectory ────────────────────────
+interface ExplodedComponentProps {
+  assembledPos: [number, number, number];
+  explodedPos: [number, number, number];
+  progress: number;
+  delay?: number;
   children: React.ReactNode;
 }
 
-function LivePart({ assembled, exploded, scrollRef, delay, children }: LivePartProps) {
-  const ref = useRef<THREE.Group>(null);
-  const localP = useRef(0);
+function ExplodedComponent({
+  assembledPos,
+  explodedPos,
+  progress,
+  delay = 0,
+  children,
+}: ExplodedComponentProps) {
+  const groupRef = useRef<THREE.Group>(null);
+  const currentPos = useRef(new THREE.Vector3(...assembledPos));
 
   useFrame(() => {
-    if (!ref.current) return;
-    const rawP = Math.max(0, scrollRef.current - delay) / (1 - delay);
-    const clamped = Math.min(1, Math.max(0, rawP));
+    if (!groupRef.current) return;
 
-    localP.current = THREE.MathUtils.lerp(localP.current, clamped, 0.06);
-    const t = localP.current * localP.current * (3 - 2 * localP.current);
+    // Staggered calculation
+    const effectiveP = Math.min(1, Math.max(0, (progress - delay) / (1 - delay * 0.8)));
+    // Cubic Bezier easeInOut
+    const ease = effectiveP < 0.5 ? 4 * effectiveP * effectiveP * effectiveP : 1 - Math.pow(-2 * effectiveP + 2, 3) / 2;
 
-    ref.current.position.x = assembled[0] + (exploded[0] - assembled[0]) * t;
-    ref.current.position.y = assembled[1] + (exploded[1] - assembled[1]) * t;
-    ref.current.position.z = assembled[2] + (exploded[2] - assembled[2]) * t;
+    const targetX = assembledPos[0] + (explodedPos[0] - assembledPos[0]) * ease;
+    const targetY = assembledPos[1] + (explodedPos[1] - assembledPos[1]) * ease;
+    const targetZ = assembledPos[2] + (explodedPos[2] - assembledPos[2]) * ease;
+
+    currentPos.current.x = THREE.MathUtils.lerp(currentPos.current.x, targetX, 0.08);
+    currentPos.current.y = THREE.MathUtils.lerp(currentPos.current.y, targetY, 0.08);
+    currentPos.current.z = THREE.MathUtils.lerp(currentPos.current.z, targetZ, 0.08);
+
+    groupRef.current.position.copy(currentPos.current);
   });
 
-  return <group ref={ref}>{children}</group>;
+  return <group ref={groupRef}>{children}</group>;
 }
 
-// ─── Barbell Assembly ───────────────────────────────────────────────────────
-interface BarbellAssemblyProps {
+// ─── Spatial Master Camera & Apparatus Rig ────────────────────────────────────
+interface SpatialBarbellExperienceProps {
   scrollProgress: React.MutableRefObject<number>;
 }
 
-function BarbellAssembly({ scrollProgress }: BarbellAssemblyProps) {
-  const groupRef = useRef<THREE.Group>(null);
+function SpatialBarbellRig({ scrollProgress }: SpatialBarbellExperienceProps) {
+  const masterGroup = useRef<THREE.Group>(null);
   const { camera } = useThree();
+  const smoothProgress = useRef(0);
 
-  const leftOuter = { pos: [-3.4, 0, 0] as [number,number,number], explode: [-6.5, 0.8, 0.5] as [number,number,number] };
-  const leftInner = { pos: [-2.9, 0, 0] as [number,number,number], explode: [-5.5, -0.4, -0.4] as [number,number,number] };
-  const leftCollar = { pos: [-2.3, 0, 0] as [number,number,number], explode: [-4.0, 1.2, 0.2] as [number,number,number] };
-  const rightCollar = { pos: [2.3, 0, 0] as [number,number,number], explode: [4.0, 1.2, -0.2] as [number,number,number] };
-  const rightInner = { pos: [2.9, 0, 0] as [number,number,number], explode: [5.5, -0.4, 0.4] as [number,number,number] };
-  const rightOuter = { pos: [3.4, 0, 0] as [number,number,number], explode: [6.5, 0.8, -0.5] as [number,number,number] };
+  // Coordinated Explode Trajectories (Isometric Engineered Spacing)
+  const leftOuterPlate = { assembled: [-3.35, 0, 0] as [number, number, number], exploded: [-6.8, 1.1, 0.6] as [number, number, number] };
+  const leftInnerPlate = { assembled: [-2.9, 0, 0] as [number, number, number], exploded: [-5.6, -0.6, -0.4] as [number, number, number] };
+  const leftCollar = { assembled: [-2.4, 0, 0] as [number, number, number], exploded: [-4.2, 1.3, 0.3] as [number, number, number] };
 
-  const progRef = useRef(0);
+  const rightCollar = { assembled: [2.4, 0, 0] as [number, number, number], exploded: [4.2, 1.3, -0.3] as [number, number, number] };
+  const rightInnerPlate = { assembled: [2.9, 0, 0] as [number, number, number], exploded: [5.6, -0.6, 0.4] as [number, number, number] };
+  const rightOuterPlate = { assembled: [3.35, 0, 0] as [number, number, number], exploded: [6.8, 1.1, -0.6] as [number, number, number] };
 
   useFrame((state) => {
-    if (!groupRef.current) return;
+    if (!masterGroup.current) return;
     const p = scrollProgress.current;
-    progRef.current = THREE.MathUtils.lerp(progRef.current, p, 0.06);
+    smoothProgress.current = THREE.MathUtils.lerp(smoothProgress.current, p, 0.05);
+    const sp = smoothProgress.current;
 
-    const assemblyMix = 1 - progRef.current;
-    groupRef.current.rotation.y = 
-      THREE.MathUtils.lerp(groupRef.current.rotation.y, -Math.PI * 0.04 + state.clock.elapsedTime * 0.04 * assemblyMix, 0.03);
-    groupRef.current.rotation.x = 
-      THREE.MathUtils.lerp(groupRef.current.rotation.x, Math.sin(state.clock.elapsedTime * 0.3) * 0.03 * assemblyMix, 0.03);
+    // Continuous dynamic camera orbit across the entire page scroll:
+    // When p is 0.0: Close heroic angle
+    // When p is 0.5: Wide dramatic exploded isometric view
+    // When p is 1.0: Intimate mechanical detail
+    const camZ = 7.5 + sp * 4.8;
+    const camY = 0.4 + Math.sin(sp * Math.PI) * 2.2;
+    const camX = Math.sin(sp * Math.PI * 1.5) * 1.8;
 
-    const targetZ = 8 + progRef.current * 5;
-    const targetY = progRef.current * 1.5;
-    (camera as THREE.PerspectiveCamera).position.z = THREE.MathUtils.lerp(
-      (camera as THREE.PerspectiveCamera).position.z, targetZ, 0.05
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, camX, 0.06);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, camY, 0.06);
+    camera.position.z = THREE.MathUtils.lerp(camera.position.z, camZ, 0.06);
+    camera.lookAt(0, 0, 0);
+
+    // Subtle atmospheric breathing rotation
+    const t = state.clock.getElapsedTime();
+    masterGroup.current.rotation.y = THREE.MathUtils.lerp(
+      masterGroup.current.rotation.y,
+      -0.15 + sp * 0.6 + Math.sin(t * 0.4) * 0.04,
+      0.05
     );
-    (camera as THREE.PerspectiveCamera).position.y = THREE.MathUtils.lerp(
-      (camera as THREE.PerspectiveCamera).position.y, targetY, 0.05
+    masterGroup.current.rotation.x = THREE.MathUtils.lerp(
+      masterGroup.current.rotation.x,
+      0.08 + Math.cos(t * 0.5) * 0.03,
+      0.05
     );
   });
 
   return (
-    <group ref={groupRef}>
-      <SteelBar />
+    <group ref={masterGroup}>
+      {/* Structural Central Steel Bar */}
+      <PrecisionBarbellShaft />
 
-      <LivePart assembled={leftOuter.pos} exploded={leftOuter.explode} scrollRef={scrollProgress} delay={0}>
-        <Plate radius={0.92} thickness={0.22} color="#111622" hasAccent accentColor="#FF7300" />
-      </LivePart>
+      {/* Left Heavy Plate Assemblage */}
+      <ExplodedComponent
+        assembledPos={leftOuterPlate.assembled}
+        explodedPos={leftOuterPlate.exploded}
+        progress={smoothProgress.current}
+        delay={0.0}
+      >
+        <CalibratedPlate
+          radius={0.96}
+          thickness={0.24}
+          color="#0F131A"
+          weightLabel="20KG"
+          accentAmber={true}
+        />
+      </ExplodedComponent>
 
-      <LivePart assembled={leftInner.pos} exploded={leftInner.explode} scrollRef={scrollProgress} delay={0.06}>
-        <Plate radius={0.78} thickness={0.18} color="#1B2230" hasAccent={false} />
-      </LivePart>
+      <ExplodedComponent
+        assembledPos={leftInnerPlate.assembled}
+        explodedPos={leftInnerPlate.exploded}
+        progress={smoothProgress.current}
+        delay={0.08}
+      >
+        <CalibratedPlate
+          radius={0.82}
+          thickness={0.2}
+          color="#1A202C"
+          weightLabel="15KG"
+          accentAmber={false}
+        />
+      </ExplodedComponent>
 
-      <LivePart assembled={leftCollar.pos} exploded={leftCollar.explode} scrollRef={scrollProgress} delay={0.12}>
-        <Collar />
-      </LivePart>
+      <ExplodedComponent
+        assembledPos={leftCollar.assembled}
+        explodedPos={leftCollar.exploded}
+        progress={smoothProgress.current}
+        delay={0.15}
+      >
+        <OlympicCollar />
+      </ExplodedComponent>
 
-      <LivePart assembled={rightCollar.pos} exploded={rightCollar.explode} scrollRef={scrollProgress} delay={0.12}>
-        <Collar />
-      </LivePart>
+      {/* Right Heavy Plate Assemblage */}
+      <ExplodedComponent
+        assembledPos={rightCollar.assembled}
+        explodedPos={rightCollar.exploded}
+        progress={smoothProgress.current}
+        delay={0.15}
+      >
+        <OlympicCollar />
+      </ExplodedComponent>
 
-      <LivePart assembled={rightInner.pos} exploded={rightInner.explode} scrollRef={scrollProgress} delay={0.06}>
-        <Plate radius={0.78} thickness={0.18} color="#1B2230" hasAccent={false} />
-      </LivePart>
+      <ExplodedComponent
+        assembledPos={rightInnerPlate.assembled}
+        explodedPos={rightInnerPlate.exploded}
+        progress={smoothProgress.current}
+        delay={0.08}
+      >
+        <CalibratedPlate
+          radius={0.82}
+          thickness={0.2}
+          color="#1A202C"
+          weightLabel="15KG"
+          accentAmber={false}
+        />
+      </ExplodedComponent>
 
-      <LivePart assembled={rightOuter.pos} exploded={rightOuter.explode} scrollRef={scrollProgress} delay={0}>
-        <Plate radius={0.92} thickness={0.22} color="#111622" hasAccent accentColor="#FF7300" />
-      </LivePart>
+      <ExplodedComponent
+        assembledPos={rightOuterPlate.assembled}
+        explodedPos={rightOuterPlate.exploded}
+        progress={smoothProgress.current}
+        delay={0.0}
+      >
+        <CalibratedPlate
+          radius={0.96}
+          thickness={0.24}
+          color="#0F131A"
+          weightLabel="20KG"
+          accentAmber={true}
+        />
+      </ExplodedComponent>
     </group>
   );
 }
 
-// ─── Studio Lighting (Solar / Molten Warm Highlights) ───────────────────────────
-function StudioLighting() {
+// ─── Studio Lighting (Luxury Automotive Solar Grading) ────────────────────────
+function ArchitecturalStudioLights() {
   return (
     <>
-      <ambientLight intensity={0.4} color="#F1F5F9" />
-      {/* Key light */}
+      <ambientLight intensity={0.4} color="#F8FAFC" />
+      {/* High Key Light */}
       <directionalLight
-        position={[8, 12, 6]}
-        intensity={2.8}
-        color="#FFF6EE"
+        position={[10, 14, 8]}
+        intensity={3.2}
+        color="#FFFFFF"
         castShadow
         shadow-mapSize={[2048, 2048]}
       />
-      {/* Warm amber rim light */}
-      <directionalLight position={[-6, -3, 4]} intensity={1.2} color="#FF8C00" />
-      {/* Background rim */}
-      <directionalLight position={[0, 4, -8]} intensity={1.0} color="#FFD180" />
-      {/* Amber point light bounce */}
-      <pointLight position={[0, -4, 6]} intensity={4.5} color="#FF7300" distance={14} decay={2} />
-      {/* Soft fill */}
-      <pointLight position={[-8, 6, 2]} intensity={1.8} color="#FFA726" distance={20} decay={2} />
+      {/* Warm Solar Rim Bounce */}
+      <directionalLight position={[-8, -4, 5]} intensity={1.8} color="#FF7300" />
+      {/* Backlight Edge Hairline */}
+      <directionalLight position={[0, 6, -10]} intensity={1.4} color="#FED7AA" />
+      {/* Point lights for metallic hot spots */}
+      <pointLight position={[0, -3, 5]} intensity={3.5} color="#F59E0B" distance={15} decay={2} />
+      <pointLight position={[-6, 5, 2]} intensity={2.0} color="#FF9800" distance={18} decay={2} />
     </>
   );
 }
 
-// ─── Ground Plane ────────────────────────────────────────────────────────────
-function GroundReflection() {
-  const mat = useMemo(() => new THREE.MeshStandardMaterial({
-    color: new THREE.Color("#05080E"),
-    metalness: 0.5,
-    roughness: 0.7,
-  }), []);
-
-  return (
-    <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -2.2, 0]} receiveShadow material={mat}>
-      <planeGeometry args={[32, 32]} />
-    </mesh>
-  );
-}
-
-// ─── Main Export ─────────────────────────────────────────────────────────────
+// ─── Main Export Component ───────────────────────────────────────────────────
 interface BarbellSceneProps {
   scrollProgress: React.MutableRefObject<number>;
   className?: string;
@@ -287,16 +484,15 @@ export default function BarbellScene({ scrollProgress, className }: BarbellScene
         alpha: true,
         powerPreference: "high-performance",
         toneMapping: THREE.ACESFilmicToneMapping,
-        toneMappingExposure: 1.25,
+        toneMappingExposure: 1.3,
       }}
       shadows
       dpr={[1, 1.5]}
       style={{ background: "transparent" }}
     >
-      <PerspectiveCamera makeDefault position={[0, 0, 8]} fov={40} near={0.1} far={100} />
-      <StudioLighting />
-      <GroundReflection />
-      <BarbellAssembly scrollProgress={scrollProgress} />
+      <PerspectiveCamera makeDefault position={[0, 0, 7.8]} fov={38} near={0.1} far={100} />
+      <ArchitecturalStudioLights />
+      <SpatialBarbellRig scrollProgress={scrollProgress} />
     </Canvas>
   );
 }

@@ -1,58 +1,64 @@
 "use client";
 
 import React, { useRef, useEffect } from "react";
-import { Dumbbell, Activity, Flame, ShieldAlert, ArrowUpRight } from "lucide-react";
+import Image from "next/image";
+import { ArrowUpRight, Flame, Dumbbell, Activity, ShieldAlert } from "lucide-react";
 
-interface TrainingCard {
-  label: string;
+interface Discipline {
+  id: string;
+  number: string;
   title: string;
+  category: string;
   description: string;
-  tag: string;
-  size: "large" | "medium" | "small";
-  bgGradient: string;
-  icon: React.ReactNode;
+  metrics: string[];
+  image: string;
+  span: string;
 }
 
-const cards: TrainingCard[] = [
+const disciplines: Discipline[] = [
   {
-    label: "01 / STRENGTH",
-    title: "COMPOUND POWER & POWERLIFTING",
+    id: "compound",
+    number: "01",
+    title: "HEAVY COMPOUND & POWERLIFTING",
+    category: "STRENGTH CORE",
     description:
-      "Deadlifts, squats, bench press, and Olympic clean & jerks. Heavy compound progressions designed around periodized overload and raw kinetic strength.",
-    tag: "STRENGTH TRAINING",
-    size: "large",
-    bgGradient: "linear-gradient(145deg, #120D08 0%, #1A140F 40%, #0B0E14 100%)",
-    icon: <Dumbbell className="w-8 h-8 text-amber-sun" />,
+      "Deadlifts, low-bar squats, competition bench press, and Olympic snatches. Calibrated Eleiko steel plates, 28mm competition knurled bars, and calibrated Eleiko racks.",
+    metrics: ["8 COMPETITION RIGS", "500KG RATED PLATFORMS", "ZERO BAR DEFLECTION"],
+    image: "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1200&auto=format&fit=crop",
+    span: "lg:col-span-8",
   },
   {
-    label: "02 / FUNCTIONAL",
-    title: "ATHLETIC CONDITIONING",
+    id: "functional",
+    number: "02",
+    title: "ATHLETIC VELOCITY & TURF",
+    category: "DYNAMIC MOVEMENT",
     description:
-      "40-yard sled drags, kettlebell flows, and plyometric complexes engineered for real-world acceleration and explosive power.",
-    tag: "FUNCTIONAL MOVEMENT",
-    size: "medium",
-    bgGradient: "linear-gradient(135deg, #14100C 0%, #1A1F2C 100%)",
-    icon: <Activity className="w-7 h-7 text-amber-primary" />,
+      "40-yard sprint lanes, weighted sled pushes, plyometric hurdles, and Bulgarian sandbag complexes to build explosive hip drive and sprint acceleration.",
+    metrics: ["40-YARD TURF", "ROGUE TANK SLEDS", "MED BALL REBOUNDERS"],
+    image: "https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=1200&auto=format&fit=crop",
+    span: "lg:col-span-4",
   },
   {
-    label: "03 / METABOLIC",
-    title: "HIGH-OUTPUT CONDITIONING",
+    id: "conditioning",
+    number: "03",
+    title: "METABOLIC ENGINE WORK",
+    category: "ANAEROBIC THRESHOLD",
     description:
-      "Assault bikes, ski ergs, and anaerobic threshold intervals that strip fat without sacrificing lean muscle tissue.",
-    tag: "AEROBIC ENGINE",
-    size: "small",
-    bgGradient: "linear-gradient(200deg, #100C09 0%, #151822 100%)",
-    icon: <Flame className="w-6 h-6 text-amber-gold" />,
+      "Assault AirBikes, Concept2 Rowers, and SkiErgs mapped to heart-rate telemetry to build massive cardiovascular resilience without burning hard-earned muscle.",
+    metrics: ["POLAR TELEMETRY", "LACTATE THRESHOLD", "ZERO IMPACT IMPACT"],
+    image: "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=1200&auto=format&fit=crop",
+    span: "lg:col-span-4",
   },
   {
-    label: "04 / RECOVERY",
-    title: "CRYOTHERAPY & SAUNA",
+    id: "recovery",
+    number: "04",
+    title: "SUB-ZERO CRYO & INFRARED",
+    category: "RECOVERY SCIENCE",
     description:
-      "Sub-zero cold plunge chambers, Finnish cedarwood sauna, and pneumatic compression suites to accelerate tissue repair.",
-    tag: "RECOVERY PROTOCOL",
-    size: "small",
-    bgGradient: "linear-gradient(160deg, #0E0C0B 0%, #171E2B 100%)",
-    icon: <ShieldAlert className="w-6 h-6 text-amber-sun" />,
+      "Cold-shock immersion plunge chambers held at a constant 42°F, paired with full-spectrum infrared cedarwood saunas to cut systemic inflammation.",
+    metrics: ["42°F PLUNGE POOLS", "INFRARED CELL REPAIR", "HYPERICE COMPRESSION"],
+    image: "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1200&auto=format&fit=crop",
+    span: "lg:col-span-8",
   },
 ];
 
@@ -66,17 +72,17 @@ export default function TrainingIntentSection() {
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const elCards = entry.target.querySelectorAll(".training-card");
-            elCards.forEach((card, i) => {
+            const cards = entry.target.querySelectorAll(".discipline-card");
+            cards.forEach((card, idx) => {
               setTimeout(() => {
                 (card as HTMLElement).style.opacity = "1";
                 (card as HTMLElement).style.transform = "translateY(0)";
-              }, i * 120);
+              }, idx * 140);
             });
           }
         });
       },
-      { threshold: 0.1 }
+      { threshold: 0.08 }
     );
 
     if (sectionRef.current) observer.observe(sectionRef.current);
@@ -87,197 +93,103 @@ export default function TrainingIntentSection() {
     <section
       id="training"
       ref={sectionRef}
-      className="relative"
-      style={{
-        background: "var(--c-ink)",
-        paddingTop: "clamp(80px, 12vw, 140px)",
-        paddingBottom: "clamp(80px, 12vw, 140px)",
-      }}
+      className="relative py-32"
+      style={{ background: "#05070A" }}
       aria-labelledby="training-heading"
     >
-      <div
-        className="absolute top-0 left-0 right-0 h-px"
-        style={{
-          background: "linear-gradient(90deg, transparent, rgba(255,115,0,0.3) 30%, rgba(255,115,0,0.3) 70%, transparent)",
-        }}
-        aria-hidden="true"
-      />
-
       <div className="container-gym">
-        {/* Section Header */}
-        <div className="mb-16 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
-          <div className="lg:col-span-7">
-            <div className="label-overline mb-3">03 / PERFORMANCE DISCIPLINES</div>
+        {/* Section Headline */}
+        <div className="mb-20 grid grid-cols-1 lg:grid-cols-12 gap-8 items-end">
+          <div className="lg:col-span-8">
+            <div className="label-overline mb-3">03 // TRAINING METHODOLOGY</div>
             <h2
               className="font-display font-black uppercase text-white tracking-tight"
               id="training-heading"
-              style={{
-                fontSize: "clamp(3rem, 7vw, 5.5rem)",
-                lineHeight: "0.92",
-              }}
+              style={{ fontSize: "clamp(3.2rem, 7vw, 6rem)", lineHeight: "0.92" }}
             >
               TRAIN WITH <br />
               <span className="text-gradient-amber">RELENTLESS INTENT.</span>
             </h2>
           </div>
-          <div className="lg:col-span-5 flex flex-col justify-end">
+          <div className="lg:col-span-4">
             <p className="font-body text-sm text-silver leading-relaxed">
-              Four specialized athletic training pillars. Structured systematically with periodized volume and bio-mechanical precision so your efforts yield undeniable physical transformation.
+              Every training discipline is executed within dedicated, purpose-engineered zones. We reject random workouts in favor of periodized kinetic overload and verified biological recovery.
             </p>
           </div>
         </div>
 
-        {/* Asymmetrical Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-5">
-          {/* Card 1: Large Featured */}
-          <div
-            className="training-card lg:col-span-6 lg:row-span-2 relative overflow-hidden group cursor-pointer"
-            style={{
-              opacity: 0,
-              transform: "translateY(30px)",
-              transition: "opacity 0.8s ease, transform 0.8s ease",
-              minHeight: "440px",
-              background: cards[0].bgGradient,
-              border: "1px solid rgba(255,115,0,0.22)",
-            }}
-          >
-            <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-amber-sun via-amber-primary to-transparent" />
-
-            <div className="p-8 sm:p-10 h-full flex flex-col justify-between relative z-10">
-              <div>
-                <div className="flex items-center justify-between mb-8">
-                  <span className="font-mono text-xs uppercase tracking-widest text-amber-sun">
-                    {cards[0].label}
-                  </span>
-                  <div className="p-3 rounded-full bg-amber-primary/10 border border-amber-primary/30">
-                    {cards[0].icon}
-                  </div>
-                </div>
-
-                <h3 className="font-display font-black uppercase text-3xl sm:text-4xl text-white tracking-wide mb-4">
-                  {cards[0].title}
-                </h3>
-                <p className="font-body text-sm text-silver leading-relaxed max-w-md">
-                  {cards[0].description}
-                </p>
-              </div>
-
-              <div className="flex items-center justify-between pt-8 border-t border-white/10 mt-8">
-                <span className="label-overline text-[10px] text-amber-sun">
-                  {cards[0].tag}
-                </span>
-                <div className="w-10 h-10 flex items-center justify-center rounded-full border border-amber-primary/40 group-hover:bg-amber-primary group-hover:text-black text-amber-sun transition-all duration-300">
-                  <ArrowUpRight size={18} />
-                </div>
-              </div>
-            </div>
-
-            {/* Hover Shader Glow */}
+        {/* Editorial Photography Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          {disciplines.map((item, idx) => (
             <div
-              className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+              key={item.id}
+              className={`discipline-card ${item.span} relative overflow-hidden group min-h-[460px] border border-white/10 hover:border-amber-primary/40 transition-all duration-500`}
               style={{
-                background: "radial-gradient(circle at 60% 40%, rgba(255,115,0,0.18) 0%, transparent 70%)",
+                opacity: 0,
+                transform: "translateY(30px)",
+                transition: "opacity 0.8s ease, transform 0.8s ease",
               }}
-            />
-          </div>
+            >
+              {/* Background Photography with Editorial Color Treatment */}
+              <div className="absolute inset-0">
+                <Image
+                  src={item.image}
+                  alt={item.title}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 66vw"
+                  className="object-cover object-center grayscale contrast-125 brightness-90 group-hover:scale-105 group-hover:contrast-110 transition-transform duration-700 ease-out"
+                />
+                {/* Heavy Dark Gradient Tint */}
+                <div className="absolute inset-0 bg-gradient-to-t from-[#030406] via-[#030406]/75 to-transparent" />
+                <div className="absolute inset-0 bg-gradient-to-r from-[#030406]/80 via-transparent to-transparent" />
+                <div className="absolute inset-0 bg-amber-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+              </div>
 
-          {/* Card 2: Medium */}
-          <div
-            className="training-card lg:col-span-6 relative overflow-hidden group cursor-pointer"
-            style={{
-              opacity: 0,
-              transform: "translateY(30px)",
-              transition: "opacity 0.8s 0.1s ease, transform 0.8s 0.1s ease",
-              minHeight: "220px",
-              background: cards[1].bgGradient,
-              border: "1px solid rgba(255,115,0,0.15)",
-            }}
-          >
-            <div className="p-8 h-full flex flex-col justify-between">
-              <div className="flex items-start justify-between">
-                <div>
-                  <div className="font-mono text-xs uppercase tracking-widest text-amber-sun mb-2">
-                    {cards[1].label}
+              {/* Top Hairline Amber Glow */}
+              <div className="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-amber-sun via-amber-primary to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+              {/* Card Content Overlay */}
+              <div className="relative z-10 h-full p-8 sm:p-10 flex flex-col justify-between">
+                {/* Header */}
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <span className="font-mono text-xs font-bold text-amber-sun tracking-widest">
+                      {item.number} //
+                    </span>
+                    <span className="label-overline text-[10px] text-silver">
+                      {item.category}
+                    </span>
                   </div>
-                  <h3 className="font-display font-black uppercase text-2xl sm:text-3xl text-white">
-                    {cards[1].title}
+
+                  <div className="w-10 h-10 rounded-full border border-white/20 flex items-center justify-center text-white group-hover:border-amber-primary group-hover:bg-amber-primary group-hover:text-black transition-all duration-300">
+                    <ArrowUpRight size={18} />
+                  </div>
+                </div>
+
+                {/* Footer Copy */}
+                <div>
+                  <h3 className="font-display font-black uppercase text-3xl sm:text-4xl text-white tracking-wide mb-3">
+                    {item.title}
                   </h3>
+                  <p className="font-body text-xs sm:text-sm text-mist max-w-xl leading-relaxed mb-6">
+                    {item.description}
+                  </p>
+
+                  {/* High-Tech Metrics Tags */}
+                  <div className="flex flex-wrap gap-2 pt-4 border-t border-white/10">
+                    {item.metrics.map((metric) => (
+                      <span
+                        key={metric}
+                        className="px-2.5 py-1 font-mono text-[9px] uppercase tracking-widest text-amber-sun bg-black/60 border border-white/10 backdrop-blur-md"
+                      >
+                        {metric}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-                <div className="p-2.5 rounded-full bg-amber-primary/10 border border-amber-primary/30">
-                  {cards[1].icon}
-                </div>
-              </div>
-
-              <p className="font-body text-xs sm:text-sm text-silver leading-relaxed mt-4">
-                {cards[1].description}
-              </p>
-
-              <div className="mt-6 flex items-center justify-between">
-                <span className="label-overline text-[9px] text-amber-sun">{cards[1].tag}</span>
-                <ArrowUpRight size={16} className="text-amber-primary group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
               </div>
             </div>
-          </div>
-
-          {/* Card 3: Small */}
-          <div
-            className="training-card lg:col-span-3 relative overflow-hidden group cursor-pointer"
-            style={{
-              opacity: 0,
-              transform: "translateY(30px)",
-              transition: "opacity 0.8s 0.2s ease, transform 0.8s 0.2s ease",
-              minHeight: "200px",
-              background: cards[2].bgGradient,
-              border: "1px solid rgba(255,115,0,0.12)",
-            }}
-          >
-            <div className="p-6 h-full flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-[11px] uppercase tracking-widest text-amber-sun">
-                  {cards[2].label}
-                </span>
-                {cards[2].icon}
-              </div>
-              <div>
-                <h3 className="font-display font-black uppercase text-xl text-white mb-2">
-                  {cards[2].title}
-                </h3>
-                <p className="font-body text-[11px] text-silver leading-relaxed">
-                  {cards[2].description}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Card 4: Small */}
-          <div
-            className="training-card lg:col-span-3 relative overflow-hidden group cursor-pointer"
-            style={{
-              opacity: 0,
-              transform: "translateY(30px)",
-              transition: "opacity 0.8s 0.3s ease, transform 0.8s 0.3s ease",
-              minHeight: "200px",
-              background: cards[3].bgGradient,
-              border: "1px solid rgba(255,115,0,0.12)",
-            }}
-          >
-            <div className="p-6 h-full flex flex-col justify-between">
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-mono text-[11px] uppercase tracking-widest text-amber-sun">
-                  {cards[3].label}
-                </span>
-                {cards[3].icon}
-              </div>
-              <div>
-                <h3 className="font-display font-black uppercase text-xl text-white mb-2">
-                  {cards[3].title}
-                </h3>
-                <p className="font-body text-[11px] text-silver leading-relaxed">
-                  {cards[3].description}
-                </p>
-              </div>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
     </section>
